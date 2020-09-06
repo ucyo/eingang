@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
-use yew::{html, Component, ComponentLink, ShouldRender, Html};
 use yew::services::ConsoleService;
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 struct Model {
     link: ComponentLink<Self>,
@@ -9,17 +9,15 @@ struct Model {
 
 enum Msg {
     AddOne,
-    SubtractOne
+    SubtractOne,
 }
 
 impl Component for Model {
     type Message = Msg;
     type Properties = ();
+
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self {
-            link,
-            value: 0,
-        }
+        Self { link, value: 0 }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
