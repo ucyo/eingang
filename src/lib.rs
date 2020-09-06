@@ -1,4 +1,4 @@
-#![recursion_limit="256"]
+#![recursion_limit = "256"]
 use wasm_bindgen::prelude::*;
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
@@ -34,11 +34,13 @@ impl Component for Model {
             }
             Msg::SetValue => {
                 let current = self.value.to_string();
-                let input = DialogService::prompt("Set value to?", Some(current.as_str())).unwrap().parse::<i64>();
+                let input = DialogService::prompt("Set value to?", Some(current.as_str()))
+                    .unwrap()
+                    .parse::<i64>();
                 match input {
                     Ok(value) => {
                         if value == self.value {
-                            return false
+                            return false;
                         }
                         let msg = format!("Do you want to change the value to {}?", value);
                         let confirmed = DialogService::confirm(msg.as_str());
@@ -51,7 +53,7 @@ impl Component for Model {
                             DialogService::alert("Did not change value.")
                         }
                     }
-                    Err(_) => ConsoleService::log("Can not parse number")
+                    Err(_) => ConsoleService::log("Can not parse number"),
                 }
             }
         }
