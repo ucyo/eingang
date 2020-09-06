@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use yew::prelude::*;
+use yew::{html, Component, ComponentLink, ShouldRender, Html};
 use yew::services::ConsoleService;
 
 struct Model {
@@ -56,5 +56,5 @@ impl Component for Model {
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-    App::<Model>::new().mount_to_body();
+    yew::start_app::<Model>();
 }
