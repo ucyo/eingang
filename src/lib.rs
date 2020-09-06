@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
+use yew::services::ConsoleService;
 
 struct Model {
     link: ComponentLink<Self>,
@@ -23,8 +24,14 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::AddOne => self.value += 1,
-            Msg::SubtractOne => self.value -= 1
+            Msg::AddOne => {
+                self.value += 1;
+                ConsoleService::log("Increment")
+            }
+            Msg::SubtractOne => {
+                self.value -= 1;
+                ConsoleService::log("Decrement");
+            }
         }
         true
     }
