@@ -1,11 +1,16 @@
 #![recursion_limit = "256"]
 use wasm_bindgen::prelude::*;
 use yew::services::{ConsoleService, DialogService};
+use yew::services::storage::{StorageService, Area};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::format::Json;
+
+const KEY: &str = "eingang.model.store";
 
 struct Model {
     link: ComponentLink<Self>,
-    value: i64,
+    storage: StorageService,
+    value: i64
 }
 
 enum Msg {
@@ -19,7 +24,24 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, value: 0 }
+
+        // Save data to localStorage (persistent across sessions)
+        // Area::Session gets deleted after the tab or window is closed
+        // details: https://stackoverflow.com/questions/19867599/what-is-the-difference-between-localstorage-sessionstorage-session-and-cookies
+        let storage = StorageService::new(Area::Local).expect("Alocation error");
+        let value = {
+            if let Json(Ok(val)) = storage.restore(KEY) {
+                ConsoleService::log("Restored!");
+                val
+            } else {
+                ConsoleService::log("Failed to restore!");
+                0
+            }
+        };
+        Self {
+            link,
+            storage,
+            value: value}
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -57,6 +79,7 @@ impl Component for Model {
                 }
             }
         }
+        self.storage.store(KEY, Json(&self.value));
         true
     }
 
