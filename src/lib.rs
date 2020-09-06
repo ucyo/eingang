@@ -11,9 +11,7 @@ struct Model {
 enum Msg {
     AddOne,
     SubtractOne,
-    ShowAlertDialog,
-    ShowConfirmationDialog,
-    ShowPromptDialog,
+    SetValue,
 }
 
 impl Component for Model {
@@ -34,23 +32,24 @@ impl Component for Model {
                 self.value -= 1;
                 ConsoleService::log("Decrement")
             }
-            Msg::ShowAlertDialog => {
-                DialogService::alert("Watch out dog!!")
-            }
-            Msg::ShowConfirmationDialog => {
-                let accepted = DialogService::confirm("Yes or no?");
-                if accepted {
-                    ConsoleService::log("Yes!!");
-                } else {
-                    ConsoleService::log("Nooooo!!")
-                }
-            }
-            Msg::ShowPromptDialog => {
+            Msg::SetValue => {
                 let current = self.value.to_string();
-                match DialogService::prompt("Set value to?", Some(current.as_str())).unwrap().parse::<i64>() {
+                let input = DialogService::prompt("Set value to?", Some(current.as_str())).unwrap().parse::<i64>();
+                match input {
                     Ok(value) => {
-                        self.value = value;
-                        ConsoleService::log(format!("Set value to {}", value).as_str())
+                        if value == self.value {
+                            return false
+                        }
+                        let msg = format!("Do you want to change the value to {}?", value);
+                        let confirmed = DialogService::confirm(msg.as_str());
+                        if confirmed {
+                            let msg = format!("Changed {} to {}.", self.value, value);
+                            self.value = value;
+                            DialogService::alert(msg.as_str());
+                            ConsoleService::log(msg.as_str())
+                        } else {
+                            DialogService::alert("Did not change value.")
+                        }
                     }
                     Err(_) => ConsoleService::log("Can not parse number")
                 }
@@ -72,9 +71,7 @@ impl Component for Model {
                 <h1>{ self.value }</h1>
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
                 <button onclick=self.link.callback(|_| Msg::SubtractOne)>{ "-1" }</button>
-                <button onclick=self.link.callback(|_| Msg::ShowAlertDialog)>{ "Dialog please" }</button>
-                <button onclick=self.link.callback(|_| Msg::ShowConfirmationDialog)>{ "Confirmation please" }</button>
-                <button onclick=self.link.callback(|_| Msg::ShowPromptDialog)>{ "Set value" }</button>
+                <button onclick=self.link.callback(|_| Msg::SetValue)>{ "Set value" }</button>
             </div>
         }
     }
