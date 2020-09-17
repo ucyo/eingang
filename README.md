@@ -2,6 +2,14 @@
 
 Minimal note taking application via WASM & Rust.
 
+# Stages
+
+- [x] Interactive session example
+- [x] Temporary storage of data (across reloads)
+- [x] Temporary storage of data (across sessions)
+- [ ] Backend API for requests
+- [ ] Persistent storage of data (on disk)
+
 # Usage
 
 First, generate the WASM bindings and save them in `./static/`.
