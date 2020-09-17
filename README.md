@@ -9,14 +9,15 @@ Afterwards, serve the files using any web server e.g. [`miniserve`](https://lib.
 
 1. Build WASM bindings
 ```bash
-make build  # or wasm-pack build --target web --out-name wasm --out-dir ./static
+make build  # or wasm-pack build --target web --out-name wasm --out-dir ../static ./frontend/
 ```
 
 2. Serve files
 ```bash
 make serve  # or miniserve ./static --index index.html
 ```
+
 The default `make` command is `make serve`. Erase all created files via following command:
-```
+```bash
 make clean  # or rm -f ./static/wasm* ./static/package.json
 ```
