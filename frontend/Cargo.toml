@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 yew = "0.17.*"
 wasm-bindgen = "0.2.*"
+eingang = { path = "../base/" }
 
 [lib]
 crate-type = ["cdylib", "rlib"]
