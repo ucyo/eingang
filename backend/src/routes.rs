@@ -1,18 +1,43 @@
 //! Routes of the backend service
-use actix_web::{web, get, Result};
-use serde::Serialize;
+use actix_web::{get, web, HttpRequest, Result};
+use serde::{Deserialize, Serialize};
+use serde_qs as qs;
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Default, Deserialize, Clone)]
 struct Data {
     name: String,
     id: usize,
 }
 
-#[get("/{name}")]
-async fn index(web::Path(name): web::Path<String>) -> Result<web::Json<Data>> {
-    let d = Data {
-        name,
-        ..Default::default()
-    };
+// Use route to (un)serialize information about the object
+#[get("/json/{id}/{name}")]
+async fn index(req: HttpRequest) -> Result<web::Json<Data>> {
+    let name = req
+        .match_info()
+        .get("name")
+        .unwrap_or("Not found")
+        .to_string();
+    let id: usize = req
+        .match_info()
+        .get("id")
+        .unwrap_or("Not found")
+        .parse()
+        .unwrap_or_default();
+    let d = Data { name, id };
+    Ok(web::Json(d))
+}
+
+// Use native query struct `actix_web::web::Query` to (un)serialize information about the object
+#[get("/query")]
+async fn saving(q: web::Query<Data>) -> Result<web::Json<Data>> {
+    let d = q.clone();
+    Ok(web::Json(d))
+}
+
+// Use serde_qs for query string to (un)serialize information about the object
+#[get("/serde/query")]
+async fn serialize(req: HttpRequest) -> Result<web::Json<Data>> {
+    let q = req.query_string();
+    let d: Data = qs::from_str(q).unwrap_or_default();
     Ok(web::Json(d))
 }
