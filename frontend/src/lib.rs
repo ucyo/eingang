@@ -35,13 +35,13 @@ impl Component for Model {
                 val
             } else {
                 ConsoleService::log("Failed to restore!");
-                0
+                Default::default()
             }
         };
         Self {
             link,
             storage,
-            value: Data::new(value, 0usize),
+            value,
         }
     }
 
