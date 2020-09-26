@@ -1,7 +1,11 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+
+
+pub mod models {
+    use serde::{Deserialize, Serialize};
+    #[derive(Debug, Serialize, Default, Deserialize, Clone)]
+    pub struct Data {
+        pub name: String,
+        pub id: usize,
     }
+
 }

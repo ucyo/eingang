@@ -1,13 +1,7 @@
 //! Routes of the backend service
 use actix_web::{get, web, HttpRequest, Result};
-use serde::{Deserialize, Serialize};
 use serde_qs as qs;
-
-#[derive(Debug, Serialize, Default, Deserialize, Clone)]
-struct Data {
-    name: String,
-    id: usize,
-}
+use eingang::models::Data;
 
 // Use route to (un)serialize information about the object
 #[get("/json/{id}/{name}")]
