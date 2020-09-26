@@ -7,6 +7,7 @@ Minimal note taking application via WASM & Rust.
 - [x] Interactive session example
 - [x] Temporary storage of data (across reloads)
 - [x] Temporary storage of data (across sessions)
+- [x] Use common crate for models between backend and frontend
 - [ ] Backend API for requests
 - [ ] Persistent storage of data (on disk)
 
