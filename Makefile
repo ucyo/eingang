@@ -15,3 +15,11 @@ clean:
 	@echo "Erasing all files"
 	@echo "===================================================================="
 	rm -f ./static/wasm* ./static/package.json
+
+backend:
+	@echo "===================================================================="
+	@echo "Start backend server"
+	@echo "===================================================================="
+	@cargo run -p eingang-backend
+
+.PHONY: serve build clean backend
