@@ -6,18 +6,19 @@ use eingang::models::Data;
 // Use route to (un)serialize information about the object
 #[get("/json/{id}/{name}")]
 async fn index(req: HttpRequest) -> Result<web::Json<Data>> {
-    let name = req
+    let value = req
         .match_info()
         .get("name")
         .unwrap_or("Not found")
-        .to_string();
+        .parse()
+        .unwrap_or_default();
     let id: usize = req
         .match_info()
         .get("id")
         .unwrap_or("Not found")
         .parse()
         .unwrap_or_default();
-    let d = Data { name, id };
+    let d = Data::new(value, id);
     Ok(web::Json(d))
 }
 
