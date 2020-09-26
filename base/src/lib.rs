@@ -5,7 +5,7 @@ pub mod models {
     #[derive(Debug, Serialize, Default, Deserialize, Clone, Copy)]
     pub struct Data {
         pub value: i64,
-        id: usize,
+        pub id: usize,  // Serde does not serialize if element is not public
     }
 
     impl Data {
