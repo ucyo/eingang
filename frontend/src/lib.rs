@@ -28,7 +28,7 @@ impl Component for Model {
         // Save data to localStorage (persistent across sessions)
         // Area::Session gets deleted after the tab or window is closed
         // details: https://stackoverflow.com/questions/19867599/what-is-the-difference-between-localstorage-sessionstorage-session-and-cookies
-        let storage = StorageService::new(Area::Local).expect("Alocation error");
+        let storage = StorageService::new(Area::Local).expect("Allocation error");
         let value = {
             if let Json(Ok(val)) = storage.restore(KEY) {
                 ConsoleService::log("Restored!");
