@@ -4,13 +4,14 @@ use yew::format::Json;
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use eingang::models::Data;
 
 const KEY: &str = "eingang.model.store";
 
 struct Model {
     link: ComponentLink<Self>,
     storage: StorageService,
-    value: i64,
+    value: Data,
 }
 
 enum Msg {
@@ -40,7 +41,7 @@ impl Component for Model {
         Self {
             link,
             storage,
-            value: value,
+            value: Data::new(value, 0usize),
         }
     }
 
@@ -68,7 +69,7 @@ impl Component for Model {
                         let confirmed = DialogService::confirm(msg.as_str());
                         if confirmed {
                             let msg = format!("Changed {} to {}.", self.value, value);
-                            self.value = value;
+                            self.value.update(value);
                             DialogService::alert(msg.as_str());
                             ConsoleService::log(msg.as_str())
                         } else {
