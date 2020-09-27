@@ -1,7 +1,10 @@
 //! Routes of the backend service
-use actix_web::{get, web, HttpRequest, Result};
+use actix_web::{get, web, HttpRequest, Result, post, HttpResponse, Responder};
 use serde_qs as qs;
 use eingang::models::Data;
+use std::{fs::File, io::Write};
+use super::STORAGE;
+
 
 // Use route to (un)serialize information about the object
 // e.g. http://localhost:8081/json/2342214/1422
@@ -38,4 +41,16 @@ async fn serialize(req: HttpRequest) -> Result<web::Json<Data>> {
     let q = req.query_string();
     let d: Data = qs::from_str(q).unwrap_or_default();
     Ok(web::Json(d))
+}
+
+
+// Send data to server and safe it on disk
+// e.g. curl -v -d '{"value": 213, "id":32}' -H 'Content-Type: application/json' http://localhost:8081/save
+#[post("/save")]
+async fn permanent(data: web::Json<Data>) -> impl Responder{
+    let buffer = File::create(STORAGE).unwrap();
+    let mut writer = std::io::BufWriter::new(buffer);
+    let _ = serde_json::to_writer_pretty(&mut writer, &data.into_inner()).unwrap();
+    writer.flush().unwrap();
+    HttpResponse::Ok()
 }

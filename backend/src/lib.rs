@@ -5,6 +5,7 @@
 // Configuration
 pub const HOST: &str = "127.0.0.1";
 pub const PORT: &str = "8081";
+pub const STORAGE: &str = "/tmp/db.json";
 
 // Modules
 pub mod routes;

@@ -6,7 +6,12 @@ use eingang_backend::{HOST, PORT};
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let address = format!("{}:{}", HOST, PORT);
-    HttpServer::new(|| App::new().service(index).service(saving).service(serialize))
+
+    HttpServer::new(|| App::new()
+        .service(index)
+        .service(saving)
+        .service(permanent)
+        .service(serialize))
         .bind(address.as_str())?
         .run()
         .await
