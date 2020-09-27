@@ -1,11 +1,9 @@
-
-
 pub mod models {
     use serde::{Deserialize, Serialize};
     #[derive(Debug, Serialize, Default, Deserialize, Clone, Copy)]
     pub struct Data {
         pub value: i64,
-        pub id: usize,  // Serde does not serialize if element is not public
+        pub id: usize, // Serde does not serialize if element is not public
     }
 
     impl Data {
@@ -17,7 +15,7 @@ pub mod models {
         }
     }
 
-    use std::ops::{SubAssign, AddAssign};
+    use std::ops::{AddAssign, SubAssign};
     impl SubAssign<i64> for Data {
         fn sub_assign(&mut self, rhs: i64) {
             self.value -= rhs;
@@ -28,7 +26,7 @@ pub mod models {
             self.value += rhs
         }
     }
-    use std::fmt::{Formatter, Result, Display};
+    use std::fmt::{Display, Formatter, Result};
     impl Display for Data {
         fn fmt(&self, f: &mut Formatter<'_>) -> Result {
             write!(f, "Data(value={}, id={})", self.value, self.id)

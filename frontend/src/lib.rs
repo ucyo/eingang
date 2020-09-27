@@ -1,10 +1,10 @@
 #![recursion_limit = "256"]
+use eingang::models::Data;
 use wasm_bindgen::prelude::*;
 use yew::format::Json;
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
-use eingang::models::Data;
 
 const KEY: &str = "eingang.model.store";
 
