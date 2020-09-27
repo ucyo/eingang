@@ -6,27 +6,21 @@ use serde_qs as qs;
 use std::{fs::File, io::Write};
 
 // Use route to (un)serialize information about the object
-// e.g. http://localhost:8081/json/2342214/1422
-#[get("/json/{id}/{name}")]
+// e.g. http://localhost:8081/json/1422
+#[get("/json/{value}")]
 async fn index(req: HttpRequest) -> Result<web::Json<Data>> {
     let value = req
         .match_info()
-        .get("name")
+        .get("value")
         .unwrap_or("Not found")
         .parse()
         .unwrap_or_default();
-    let id: usize = req
-        .match_info()
-        .get("id")
-        .unwrap_or("Not found")
-        .parse()
-        .unwrap_or_default();
-    let d = Data::new(value, id);
+    let d = Data::new(value);
     Ok(web::Json(d))
 }
 
 // Use native query struct `actix_web::web::Query` to (un)serialize information about the object
-// e.g. http://localhost:8081/query?name=1422&id=2342214
+// e.g. http://localhost:8081/query?value=2423&id=746217fd-da9c-4139-8b8e-cf4089dd680e
 #[get("/query")]
 async fn saving(q: web::Query<Data>) -> Result<web::Json<Data>> {
     let d = q.clone();
@@ -34,7 +28,7 @@ async fn saving(q: web::Query<Data>) -> Result<web::Json<Data>> {
 }
 
 // Use serde_qs for query string to (un)serialize information about the object
-// e.g. http://localhost:8081/serde/query?name=1422&id=2342214
+// e.g. http://localhost:8081/serde/query?value=2423&id=746217fd-da9c-4139-8b8e-cf4089dd680e
 #[get("/serde/query")]
 async fn serialize(req: HttpRequest) -> Result<web::Json<Data>> {
     let q = req.query_string();
@@ -43,7 +37,7 @@ async fn serialize(req: HttpRequest) -> Result<web::Json<Data>> {
 }
 
 // Send data to server and safe it on disk
-// e.g. curl -v -d '{"value": 213, "id":32}' -H 'Content-Type: application/json' http://localhost:8081/save
+// e.g. curl -v -d '{"value":2423,"id":"746217fd-da9c-4139-8b8e-cf4089dd680e"}' -H 'Content-Type: application/json' http://localhost:8081/save
 #[post("/save")]
 async fn permanent(data: web::Json<Data>) -> impl Responder {
     let buffer = File::create(STORAGE).unwrap();

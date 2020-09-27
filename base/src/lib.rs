@@ -1,14 +1,16 @@
 pub mod models {
     use serde::{Deserialize, Serialize};
-    #[derive(Debug, Serialize, Default, Deserialize, Clone, Copy)]
+    use uuid::Uuid;
+
+    #[derive(Debug, Serialize, Deserialize, Clone, Copy)]
     pub struct Data {
         pub value: i64,
-        pub id: usize, // Serde does not serialize if element is not public
+        pub id: Uuid, // Serde does not serialize if element is not public
     }
 
     impl Data {
-        pub fn new(value: i64, id: usize) -> Self {
-            Data { value, id }
+        pub fn new(value: i64) -> Self {
+            Data { value, ..Default::default() }
         }
         pub fn update(&mut self, value: i64) {
             self.value = value
@@ -40,6 +42,13 @@ pub mod models {
     impl PartialEq<Data> for i64 {
         fn eq(&self, other: &Data) -> bool {
             *self == other.value
+        }
+    }
+    impl Default for Data {
+        fn default() -> Self {
+            let id = Uuid::new_v4();
+            let value = 0;
+            Data { value, id }
         }
     }
 }
