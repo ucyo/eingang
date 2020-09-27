@@ -1,5 +1,5 @@
 //! Routes of the backend service
-use super::STORAGE;
+use crate::STORAGE;
 use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder, Result};
 use eingang::models::Data;
 use serde_qs as qs;
