@@ -46,3 +46,11 @@ async fn permanent(data: web::Json<Data>) -> impl Responder {
     writer.flush().unwrap();
     HttpResponse::Ok()
 }
+
+#[get("/load")]
+async fn loading(_: HttpRequest) -> Result<web::Json<Data>> {
+    let buffer = File::open(STORAGE).unwrap();
+    let rdr = std::io::BufReader::new(buffer);
+    let data: Data = serde_json::from_reader(rdr).unwrap();
+    Ok(web::Json(data))
+}

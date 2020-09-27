@@ -13,6 +13,7 @@ async fn main() -> std::io::Result<()> {
             .service(saving)
             .service(permanent)
             .service(serialize)
+            .service(loading)
     })
     .bind(address.as_str())?
     .run()
