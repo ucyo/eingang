@@ -8,8 +8,12 @@ Minimal note taking application via WASM & Rust.
 - [x] Temporary storage of data (across reloads)
 - [x] Temporary storage of data (across sessions)
 - [x] Use common crate for models between backend and frontend
-- [ ] Backend API for requests
-- [ ] Persistent storage of data (on disk)
+- [x] Enable persistent storage of data (on disk) for Backend API
+- [ ] Use safe/load from persistent storage via Backend API
+
+# Todo
+
+- Implement similar structure like `todo` example [here](https://github.com/actix/examples/blob/master/sqlx_todo/src/todo/model.rs).
 
 # Usage
 
