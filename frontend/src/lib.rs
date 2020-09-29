@@ -1,23 +1,31 @@
 #![recursion_limit = "256"]
 use eingang::models::Data;
 use wasm_bindgen::prelude::*;
-use yew::format::Json;
+use yew::format::{Json, Nothing};
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::services::fetch::{FetchTask, Response, Request};
+use anyhow::Error;
 
 const KEY: &str = "eingang.model.store";
+
+type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 
 struct Model {
     link: ComponentLink<Self>,
     storage: StorageService,
     value: Data,
+    ft: Option<FetchTask>,  // currently active FetchTask is saved here
 }
 
 enum Msg {
     AddOne,
     SubtractOne,
     SetValue,
+    FetchStart,
+    FetchSuccess(Data),
+    FetchFail,
 }
 
 impl Component for Model {
@@ -42,11 +50,43 @@ impl Component for Model {
             link,
             storage,
             value,
+            ft: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::FetchStart => {
+
+                // set up what to do if the FetchResponse finishes
+                let callback = self.link.callback(
+                    move |response: FetchResponse<Data> | {
+                        let (meta, Json(result)) = response.into_parts();
+                        if meta.status.is_success() {
+                            Msg::FetchSuccess(result.ok().unwrap())
+                        } else {
+                            Msg::FetchFail
+                        }
+                    }
+                );
+
+                // actual request body
+                let request = Request::get("http://localhost:8081/load").body(Nothing).unwrap();
+
+                // Setting out the request
+                let task = yew::services::FetchService::fetch(request, callback).unwrap();
+
+                // Saving the request on the model
+                self.ft = Some(task)
+            }
+            Msg::FetchSuccess(data) => {
+                self.value = data;
+                self.ft = None
+            }
+            Msg::FetchFail => {
+                ConsoleService::log("Fetching of data failed!!!");
+                self.ft = None
+            }
             Msg::AddOne => {
                 self.value += 1;
                 ConsoleService::log("Increment")
@@ -98,6 +138,7 @@ impl Component for Model {
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
                 <button onclick=self.link.callback(|_| Msg::SubtractOne)>{ "-1" }</button>
                 <button onclick=self.link.callback(|_| Msg::SetValue)>{ "Set value" }</button>
+                <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
             </div>
         }
     }
