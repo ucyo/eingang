@@ -170,6 +170,7 @@ impl Component for Model {
                 <button onclick=self.link.callback(|_| Msg::SubtractOne)>{ "-1" }</button>
                 <button onclick=self.link.callback(|_| Msg::SetValue)>{ "Set value" }</button>
                 <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
+                <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
             </div>
         }
     }
