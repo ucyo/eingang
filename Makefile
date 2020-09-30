@@ -1,4 +1,4 @@
-serve: build
+frontend: build
 	@echo "===================================================================="
 	@echo "Serving files via miniserve"
 	@echo "===================================================================="
@@ -22,4 +22,4 @@ backend:
 	@echo "===================================================================="
 	@cargo run -p eingang-backend
 
-.PHONY: serve build clean backend
+.PHONY: frontend build clean backend
