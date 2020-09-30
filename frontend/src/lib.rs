@@ -75,7 +75,7 @@ impl Component for Model {
                 );
                 let request = Request::post("http://localhost:8081/save")
                     .header("Content-Type", "application/json")
-                    .body(Json(self.value)).unwrap();
+                    .body(Json(&self.value)).unwrap();
                 let task = yew::services::FetchService::fetch(request, callback).unwrap();
                 self.st = Some(task);
             }
