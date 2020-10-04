@@ -93,11 +93,11 @@ impl Task {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub enum TaskStatus {
     Open,
     Waiting,
-    Done,
+    Closed,
     Deactivated,
 }
 
