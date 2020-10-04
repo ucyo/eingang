@@ -69,6 +69,17 @@ impl Default for Task {
     }
 }
 
+impl From<Note> for Task {
+    fn from(note: Note) -> Self {
+        Task {
+            content: note.content,
+            title: note.title,
+            meta: note.meta,
+            ..Default::default()
+        }
+    }
+}
+
 impl Task {
     pub fn new(content: String) -> Self {
         Task {
