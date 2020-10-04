@@ -17,6 +17,22 @@ impl Default for Note {
     }
 }
 
+impl Note {
+    pub fn new(content: String) -> Self {
+        Note {
+            content,
+            ..Default::default()
+        }
+    }
+    pub fn with_title(content: String, title: String) -> Self {
+        Note {
+            title,
+            content,
+            ..Default::default()
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 struct Meta {
     created_on: chrono::DateTime<chrono::Utc>,
@@ -53,6 +69,30 @@ impl Default for Task {
     }
 }
 
+impl Task {
+    pub fn new(content: String) -> Self {
+        Task {
+            content,
+            ..Default::default()
+        }
+    }
+    pub fn with_title(content: String, title: String) -> Self {
+        Task {
+            content,
+            title,
+            ..Default::default()
+        }
+    }
+    pub fn with_title_and_status(content: String, title: String, status: TaskStatus) -> Self {
+        Task {
+            content,
+            title,
+            status,
+            ..Default::default()
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub enum TaskStatus {
     Open,
@@ -75,5 +115,11 @@ impl Default for Thread {
             tasks: Vec::new(),
             ..Default::default()
         }
+    }
+}
+
+impl Thread {
+    pub fn new() -> Self {
+        Thread::default()
     }
 }
