@@ -1,21 +1,11 @@
 #![allow(dead_code)]
 use serde::{Deserialize,Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Note {
     pub title: String,
     pub content: String,
     meta: Meta,
-}
-
-impl Default for Note {
-    fn default() -> Self {
-        Note {
-            title: String::new(),
-            content: String::new(),
-            ..Default::default()
-        }
-    }
 }
 
 impl Note {
@@ -52,28 +42,20 @@ impl Default for Meta {
 }
 
 impl Meta {
+    pub fn new() -> Self {
+        Meta::default()
+    }
     pub fn update_modified_date(&mut self) {
         self.last_modified = chrono::Utc::now()
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Task {
     pub title: String,
     pub content: String,
     pub status: TaskStatus,
     meta: Meta
-}
-
-impl Default for Task {
-    fn default() -> Self {
-        Task {
-            title: String::new(),
-            content: String::new(),
-            status: TaskStatus::Open,
-            ..Default::default()
-        }
-    }
 }
 
 impl From<Note> for Task {
@@ -119,21 +101,17 @@ pub enum TaskStatus {
     Deactivated,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+impl Default for TaskStatus {
+    fn default() -> Self {
+        TaskStatus::Open
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Thread {
     pub notes: Vec<Note>,
     pub tasks: Vec<Task>,
     meta: Meta
-}
-
-impl Default for Thread {
-    fn default() -> Self {
-        Thread {
-            notes: Vec::new(),
-            tasks: Vec::new(),
-            ..Default::default()
-        }
-    }
 }
 
 impl Thread {
