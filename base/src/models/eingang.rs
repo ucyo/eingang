@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use serde::{Deserialize,Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -47,6 +48,12 @@ impl Default for Meta {
             last_modified: chrono::Utc::now(),
             uuid: uuid::Uuid::new_v4(),
         }
+    }
+}
+
+impl Meta {
+    pub fn update_modified_date(&mut self) {
+        self.last_modified = chrono::Utc::now()
     }
 }
 
