@@ -119,3 +119,18 @@ impl Thread {
         Thread::default()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{Note, Task, TaskStatus};
+    #[test]
+    fn create_note_and_cast_to_task() {
+        let c = "content".to_string();
+        let t = "title".to_string();
+        let note = Note::with_title(c.clone(), t.clone());
+        assert_eq!(note.content, c);
+        assert_eq!(note.title, t);
+        let task = Task::from(note);
+        assert_eq!(task.status, TaskStatus::Open)
+    }
+}
