@@ -54,3 +54,5 @@ async fn loading(_: HttpRequest) -> Result<web::Json<Data>> {
     let data: Data = serde_json::from_reader(rdr).unwrap();
     Ok(web::Json(data))
 }
+
+pub mod notes;
