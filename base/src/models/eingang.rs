@@ -43,7 +43,7 @@ impl Default for Meta {
 
 impl Meta {
     pub fn new() -> Self {
-        Meta::default()
+        Default::default()
     }
     pub fn update_modified_date(&mut self) {
         self.last_modified = chrono::Utc::now()
@@ -116,7 +116,7 @@ pub struct Thread {
 
 impl Thread {
     pub fn new() -> Self {
-        Thread::default()
+        Default::default()
     }
     pub fn with_notes(notes: Vec<Note>) -> Self {
         Thread {
