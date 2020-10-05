@@ -147,7 +147,7 @@ impl Thread {
 
 #[cfg(test)]
 mod tests {
-    use super::{Note, Task, TaskStatus};
+    use super::{Note, Task, Thread, TaskStatus};
     #[test]
     fn create_note_and_cast_to_task() {
         let c = "content".to_string();
@@ -157,5 +157,16 @@ mod tests {
         assert_eq!(note.title, t);
         let task = Task::from(note);
         assert_eq!(task.status, TaskStatus::Open)
+    }
+
+    #[test]
+    fn create_thread() {
+        let note = Note::new("note".to_string());
+        let task = Task::new("task".to_string());
+        let mut thread = Thread::new();
+        thread.add_note(note);
+        thread.add_task(task);
+        assert_eq!(thread.tasks[0].content, "task");
+        assert_eq!(thread.notes[0].content, "note");
     }
 }
