@@ -118,6 +118,31 @@ impl Thread {
     pub fn new() -> Self {
         Thread::default()
     }
+    pub fn with_notes(notes: Vec<Note>) -> Self {
+        Thread {
+            notes,
+            ..Default::default()
+        }
+    }
+    pub fn with_tasks(tasks: Vec<Task>) -> Self {
+        Thread {
+            tasks,
+            ..Default::default()
+        }
+    }
+    pub fn with_tasks_and_notes(tasks: Vec<Task>, notes: Vec<Note>) -> Self {
+        Thread {
+            tasks,
+            notes,
+            ..Default::default()
+        }
+    }
+    pub fn add_note(&mut self, note: Note) {
+        self.notes.push(note)
+    }
+    pub fn add_task(&mut self, task:Task) {
+        self.tasks.push(task)
+    }
 }
 
 #[cfg(test)]
