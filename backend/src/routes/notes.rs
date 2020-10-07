@@ -15,7 +15,7 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
 #[post("/notes/new")]
 async fn create_new_note(note: web::Json<Note>) -> impl Responder {
     unimplemented!();
-    HttpResponse::Ok()
+    HttpResponse::NoContent()
 }
 
 #[get("/notes/{uuid}")]
@@ -26,11 +26,11 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
 #[delete("/notes/{uuid}/delete")]
 async fn delete_note(req: HttpRequest) -> impl Responder {
     unimplemented!();
-    HttpResponse::Ok()
+    HttpResponse::NoContent()
 }
 
 #[patch("/notes/{uuid}/update")]
 async fn update_note(req: HttpRequest) -> impl Responder {
     unimplemented!();
-    HttpResponse::Ok()
+    HttpResponse::NoContent()
 }

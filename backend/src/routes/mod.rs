@@ -44,7 +44,7 @@ async fn permanent(data: web::Json<Data>) -> impl Responder {
     let mut writer = std::io::BufWriter::new(buffer);
     let _ = serde_json::to_writer_pretty(&mut writer, &data.into_inner()).unwrap();
     writer.flush().unwrap();
-    HttpResponse::Ok()
+    HttpResponse::NoContent()
 }
 
 #[get("/load")]
