@@ -31,7 +31,14 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> impl Responder {
 
 #[get("/notes/{uuid}")]
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
-    unimplemented!()
+    let uuid: String = req
+        .match_info()
+        .get("uuid")
+        .unwrap()
+        .parse()
+        .unwrap();
+    let note = read_note(uuid);
+    Ok(web::Json(note))
 }
 
 #[delete("/notes/{uuid}/delete")]
