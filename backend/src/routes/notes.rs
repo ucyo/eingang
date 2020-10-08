@@ -17,9 +17,16 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
 }
 
 #[post("/notes/new")]
-async fn create_new_note(note: web::Json<Note>) -> impl Responder {
-    unimplemented!();
-    HttpResponse::NoContent()
+async fn create_new_note(q: web::Json<NoteQuery>) -> impl Responder {
+    let nq = q.into_inner();
+    if let None = nq.content {
+        return HttpResponse::BadRequest()
+    };
+    let content = nq.content.unwrap();
+    let title = nq.title.unwrap_or_default();
+    let note = Note::with_title(content, title);
+    save_note(note);
+    HttpResponse::Ok()
 }
 
 #[get("/notes/{uuid}")]
