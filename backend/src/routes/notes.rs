@@ -57,8 +57,29 @@ async fn delete_note(req: HttpRequest) -> impl Responder {
 }
 
 #[patch("/notes/{uuid}/update")]
-async fn update_note(req: HttpRequest) -> impl Responder {
-    unimplemented!();
+async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> impl Responder {
+    let uuid: String = req
+        .match_info()
+        .get("uuid")
+        .unwrap()
+        .parse()
+        .unwrap();
+    let mut note = read_note(uuid);
+    let nq = q.into_inner();
+
+    let mut note_changed = false;
+    if let Some(c) = nq.content {
+        note.content = c;
+        note_changed = true;
+    }
+    if let Some(t) = nq.title {
+        note.title = t;
+        note_changed = true
+    }
+    if note_changed {
+        note.meta.update_modified_date();
+        save_note(note)
+    }
     HttpResponse::NoContent()
 }
 
