@@ -34,3 +34,35 @@ async fn update_note(req: HttpRequest) -> impl Responder {
     unimplemented!();
     HttpResponse::NoContent()
 }
+
+use crate::{BASE_FOLDER, NOTE_FOLDER};
+use std::path::{Path, PathBuf};
+use std::fs::File;
+use std::io::Write;
+
+fn create_filepath(uuid: String) -> PathBuf {
+    let basename = format!("{}.json", uuid);
+    Path::new(BASE_FOLDER)
+        .join(NOTE_FOLDER)
+        .join(basename)
+}
+
+fn save_note(note: Note) {
+    let file = create_filepath(note.meta.uuid.to_string());
+    let buffer = File::create(file).unwrap();
+    let mut writer = std::io::BufWriter::new(buffer);
+    let _ = serde_json::to_writer_pretty(&mut writer, &note).unwrap();
+    writer.flush().unwrap();
+}
+
+fn read_note_filepath(file: PathBuf) -> Note {
+    let buffer = File::open(file).unwrap();
+    let rdr = std::io::BufReader::new(buffer);
+    let note: Note = serde_json::from_reader(rdr).unwrap();
+    note
+}
+
+fn read_note(uuid: String) -> Note {
+    let file = create_filepath(uuid);
+    read_note_filepath(file)
+}
