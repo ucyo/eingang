@@ -5,7 +5,7 @@ use serde::{Deserialize,Serialize};
 pub struct Note {
     pub title: String,
     pub content: String,
-    meta: Meta,
+    pub meta: Meta,
 }
 
 impl Note {
@@ -25,10 +25,10 @@ impl Note {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Meta {
-    created_on: chrono::DateTime<chrono::Utc>,
-    last_modified: chrono::DateTime<chrono::Utc>,
-    uuid: uuid::Uuid,
+pub struct Meta {
+    pub created_on: chrono::DateTime<chrono::Utc>,
+    pub last_modified: chrono::DateTime<chrono::Utc>,
+    pub uuid: uuid::Uuid,
 }
 
 impl Default for Meta {
