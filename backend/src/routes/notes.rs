@@ -9,7 +9,11 @@ type EingangResponse<T> = Result<web::Json<T>>;
 
 #[get("/notes")]
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
-    unimplemented!()
+    let folder = Path::new(BASE_FOLDER)
+        .join(NOTE_FOLDER);
+    let temp : Vec<_> = std::fs::read_dir(folder).unwrap().map(|e| e.map(|d| d.path())).collect();
+    let result:Vec<Note> = temp.into_iter().map(|f| read_note_filepath(f.unwrap())).collect();
+    Ok(web::Json(result))
 }
 
 #[post("/notes/new")]
