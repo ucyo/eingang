@@ -43,8 +43,17 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
 
 #[delete("/notes/{uuid}/delete")]
 async fn delete_note(req: HttpRequest) -> impl Responder {
-    unimplemented!();
-    HttpResponse::NoContent()
+    let uuid: String = req
+        .match_info()
+        .get("uuid")
+        .unwrap()
+        .parse()
+        .unwrap();
+    let file = create_filepath(uuid);
+    match std::fs::remove_file(file) {
+        Ok(_) => HttpResponse::NoContent(),
+        _ => HttpResponse::BadRequest()
+    }
 }
 
 #[patch("/notes/{uuid}/update")]
