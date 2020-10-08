@@ -1,7 +1,7 @@
 #![allow(unused_variables, unreachable_code)]
 use eingang::models::{Note, NoteQuery};
 use actix_web::{get, post, delete, patch};
-use actix_web::{HttpRequest, HttpResponse, Responder, Result, web};
+use actix_web::{HttpRequest, HttpResponse, Result, web};
 
 type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
 type EingangResponse<T> = Result<web::Json<T>>;
@@ -12,53 +12,43 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
     let folder = Path::new(BASE_FOLDER)
         .join(NOTE_FOLDER);
     let temp : Vec<_> = std::fs::read_dir(folder).unwrap().map(|e| e.map(|d| d.path())).collect();
-    let result:Vec<Note> = temp.into_iter().map(|f| read_note_filepath(f.unwrap())).collect();
+    let result:Vec<Note> = temp.into_iter().map(|f| read_note_filepath(&f.unwrap())).collect();
     Ok(web::Json(result))
 }
 
 #[post("/notes/new")]
-async fn create_new_note(q: web::Json<NoteQuery>) -> impl Responder {
+async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     let nq = q.into_inner();
     if let None = nq.content {
-        return HttpResponse::BadRequest()
+        return HttpResponse::BadRequest().json("Field 'content' is missing")
     };
     let content = nq.content.unwrap();
     let title = nq.title.unwrap_or_default();
     let note = Note::with_title(content, title);
-    save_note(note);
-    HttpResponse::Ok()
+    save_note(&note);
+    HttpResponse::Ok().json(note.meta.uuid)  // TODO Better response messages. Maybe { http_code: 321, message: "" }
 }
 
 #[get("/notes/{uuid}")]
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
-        .unwrap()
-        .parse()
-        .unwrap();
     let note = read_note(uuid);
     Ok(web::Json(note))
 }
 
 #[delete("/notes/{uuid}/delete")]
-async fn delete_note(req: HttpRequest) -> impl Responder {
+async fn delete_note(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-        .unwrap()
-        .parse()
-        .unwrap();
     let file = create_filepath(uuid);
     match std::fs::remove_file(file) {
-        Ok(_) => HttpResponse::NoContent(),
-        _ => HttpResponse::BadRequest()
+        Ok(_) => HttpResponse::NoContent().json("Successful"),
+        _ => HttpResponse::BadRequest().json("UUID is not associated")
     }
 }
 
 #[patch("/notes/{uuid}/update")]
-async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> impl Responder {
+async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-        .get("uuid")
-        .unwrap()
-        .parse()
-        .unwrap();
     let mut note = read_note(uuid);
     let nq = q.into_inner();
 
@@ -73,9 +63,9 @@ async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> impl Responde
     }
     if note_changed {
         note.meta.update_modified_date();
-        save_note(note)
+        save_note(&note)
     }
-    HttpResponse::NoContent()
+    HttpResponse::NoContent().json("Successful")
 }
 
 use crate::{BASE_FOLDER, NOTE_FOLDER};
