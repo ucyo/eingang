@@ -1,5 +1,5 @@
 #![allow(unused_variables, unreachable_code)]
-use eingang::models::Note;
+use eingang::models::{Note, NoteQuery};
 use actix_web::{get, post, delete, patch};
 use actix_web::{HttpRequest, HttpResponse, Responder, Result, web};
 

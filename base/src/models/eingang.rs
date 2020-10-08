@@ -1,6 +1,18 @@
 #![allow(dead_code)]
 use serde::{Deserialize,Serialize};
 
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct NoteQuery {
+    pub title: Option<String>,
+    pub content: Option<String>
+}
+
+impl NoteQuery {
+    fn new() -> Self {
+        NoteQuery::default()
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Note {
     pub title: String,
