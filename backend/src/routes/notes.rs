@@ -31,9 +31,7 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> impl Responder {
 
 #[get("/notes/{uuid}")]
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
-    let uuid: String = req
-        .match_info()
-        .get("uuid")
+    let uuid: String = parse_uuid(req);
         .unwrap()
         .parse()
         .unwrap();
@@ -43,9 +41,7 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
 
 #[delete("/notes/{uuid}/delete")]
 async fn delete_note(req: HttpRequest) -> impl Responder {
-    let uuid: String = req
-        .match_info()
-        .get("uuid")
+    let uuid: String = parse_uuid(req);
         .unwrap()
         .parse()
         .unwrap();
@@ -58,8 +54,7 @@ async fn delete_note(req: HttpRequest) -> impl Responder {
 
 #[patch("/notes/{uuid}/update")]
 async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> impl Responder {
-    let uuid: String = req
-        .match_info()
+    let uuid: String = parse_uuid(req);
         .get("uuid")
         .unwrap()
         .parse()
@@ -95,7 +90,7 @@ fn create_filepath(uuid: String) -> PathBuf {
         .join(basename)
 }
 
-fn save_note(note: Note) {
+fn save_note(note: &Note) {
     let file = create_filepath(note.meta.uuid.to_string());
     let buffer = File::create(file).unwrap();
     let mut writer = std::io::BufWriter::new(buffer);
@@ -103,7 +98,7 @@ fn save_note(note: Note) {
     writer.flush().unwrap();
 }
 
-fn read_note_filepath(file: PathBuf) -> Note {
+fn read_note_filepath(file: &PathBuf) -> Note {
     let buffer = File::open(file).unwrap();
     let rdr = std::io::BufReader::new(buffer);
     let note: Note = serde_json::from_reader(rdr).unwrap();
@@ -112,5 +107,14 @@ fn read_note_filepath(file: PathBuf) -> Note {
 
 fn read_note(uuid: String) -> Note {
     let file = create_filepath(uuid);
-    read_note_filepath(file)
+    read_note_filepath(&file)
+}
+
+fn parse_uuid(req: HttpRequest) -> String {
+    req
+    .match_info()
+    .get("uuid")
+    .unwrap()  // TODO Better parsing, since this could panic
+    .parse()
+    .unwrap()
 }
