@@ -1,4 +1,8 @@
+//! Main crate with struct and model definitions for components
+
+
 #![allow(dead_code)]
+
 use serde::{Deserialize,Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -13,6 +17,7 @@ impl NoteQuery {
     }
 }
 
+/// The Note struct.
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Note {
     pub title: String,
@@ -21,6 +26,9 @@ pub struct Note {
 }
 
 impl Note {
+
+    /// Returns a new Note object by using only the content field. The title
+    /// can be left empty and added later on.
     pub fn new(content: String) -> Self {
         Note {
             content,
