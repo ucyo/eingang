@@ -1,12 +1,27 @@
+//! # Routes: Note Element
+//!
+//! In this module are all the routes for working with Note elements.
+//! It handles the routes and query parameters of these routes.
+//! All of these are related to the Note element.
+//!
+//! The current list of elements are:
+//! - Http responses send by the backend to the user
+//! - Available routes for the user
+//! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
 use eingang::models::{Note, NoteQuery};
 use actix_web::{get, post, delete, patch};
 use actix_web::{HttpRequest, HttpResponse, Result, web};
 
+/// Return a vector of json serializeable data
 type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
+
+/// Return a json representation of serializable data
 type EingangResponse<T> = Result<web::Json<T>>;
 
-
+/// Return all Notes
+///
+/// This route returns all notes saved on the filesystem.
 #[get("/notes")]
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
     let folder = Path::new(BASE_FOLDER)
