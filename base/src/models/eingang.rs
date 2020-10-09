@@ -1,4 +1,7 @@
-//! Main crate with struct and model definitions for components
+//! # Note model
+//!
+//! In this crate all model and struct defintions regarding the
+//! `Note` componented are saved.
 
 
 #![allow(dead_code)]
