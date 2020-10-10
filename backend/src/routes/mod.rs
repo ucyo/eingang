@@ -5,10 +5,12 @@ use eingang::models::Data;
 use serde_qs as qs;
 use std::{fs::File, io::Write};
 
-// Use route to (un)serialize information about the object
-// e.g. http://localhost:8081/json/1422
-#[get("/json/{value}")]
-async fn index(req: HttpRequest) -> Result<web::Json<Data>> {
+
+/// Index method for simple counter
+///
+/// Use route to (un)serialize information about the object
+/// e.g. `http://localhost:8081/json/1422`
+pub async fn index(req: HttpRequest) -> Result<web::Json<Data>> {
     let value = req
         .match_info()
         .get("value")
