@@ -9,9 +9,17 @@
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
-use actix_web::{delete, get, patch, post};
 use actix_web::{web, HttpRequest, HttpResponse, Result};
 use eingang::models::{Note, NoteQuery};
+
+/// Configure routes for Notes
+pub fn config(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/notes").route(web::get().to(get_all_notes)));
+    cfg.service(web::resource("/notes/new").route(web::post().to(create_new_note)));
+    cfg.service(web::resource("/notes/{uuid}").route(web::get().to(get_note)));
+    cfg.service(web::resource("/notes/{uuid}/delete").route(web::delete().to(delete_note)));
+    cfg.service(web::resource("/notes/{uuid}/update").route(web::patch().to(update_note)));
+}
 
 /// Return a vector of json serializeable data
 type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
@@ -22,7 +30,6 @@ type EingangResponse<T> = Result<web::Json<T>>;
 /// Return all Notes
 ///
 /// This route returns all notes saved on the filesystem.
-#[get("/notes")]
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
     let folder = Path::new(BASE_FOLDER).join(NOTE_FOLDER);
     let temp: Vec<_> = std::fs::read_dir(folder)
@@ -36,7 +43,6 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
     Ok(web::Json(result))
 }
 
-#[post("/notes/new")]
 async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     let nq = q.into_inner();
     if let None = nq.content {
@@ -49,14 +55,12 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     HttpResponse::Ok().json(note.meta.uuid) // TODO Better response messages. Maybe { http_code: 321, message: "" }
 }
 
-#[get("/notes/{uuid}")]
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
     let note = read_note(uuid);
     Ok(web::Json(note))
 }
 
-#[delete("/notes/{uuid}/delete")]
 async fn delete_note(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
     let file = create_filepath(uuid);
@@ -66,7 +70,6 @@ async fn delete_note(req: HttpRequest) -> HttpResponse {
     }
 }
 
-#[patch("/notes/{uuid}/update")]
 async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
     let mut note = read_note(uuid);

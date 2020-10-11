@@ -16,11 +16,7 @@ async fn main() -> std::io::Result<()> {
             .service(saving)
             .service(permanent)
             .service(serialize)
-            .service(notes::create_new_note)
-            .service(notes::get_note)
-            .service(notes::delete_note)
-            .service(notes::update_note)
-            .service(notes::get_all_notes)
+            .configure(notes::config)
             .service(loading)
     })
     .bind(address.as_str())?
