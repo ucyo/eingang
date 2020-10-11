@@ -1,12 +1,12 @@
 #![recursion_limit = "256"]
+use anyhow::Error;
 use eingang::models::Data;
 use wasm_bindgen::prelude::*;
 use yew::format::{Json, Nothing};
+use yew::services::fetch::{FetchTask, Request, Response};
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
-use yew::services::fetch::{FetchTask, Response, Request};
-use anyhow::Error;
 
 const KEY: &str = "eingang.model.store";
 
@@ -17,7 +17,7 @@ struct Model {
     link: ComponentLink<Self>,
     storage: StorageService,
     value: Data,
-    ft: Option<FetchTask>,  // currently active FetchTask is saved here
+    ft: Option<FetchTask>, // currently active FetchTask is saved here
     st: Option<FetchTask>,
 }
 
@@ -56,26 +56,25 @@ impl Component for Model {
             storage,
             value,
             ft: None,
-            st: None
+            st: None,
         }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::SendStart => {
-                let callback = self.link.callback(
-                    move | response: SendResponse | {
-                        let (meta, _) = response.into_parts();
-                        if meta.status.is_success() {
-                            Msg::SendSuccess
-                        } else {
-                            Msg::SendFailed
-                        }
+                let callback = self.link.callback(move |response: SendResponse| {
+                    let (meta, _) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::SendSuccess
+                    } else {
+                        Msg::SendFailed
                     }
-                );
+                });
                 let request = Request::post("http://localhost:8081/save")
                     .header("Content-Type", "application/json")
-                    .body(Json(&self.value)).unwrap();
+                    .body(Json(&self.value))
+                    .unwrap();
                 let task = yew::services::FetchService::fetch(request, callback).unwrap();
                 self.st = Some(task);
             }
@@ -90,19 +89,19 @@ impl Component for Model {
             }
             Msg::FetchStart => {
                 // set up what to do if the FetchResponse finishes
-                let callback = self.link.callback(
-                    move |response: FetchResponse<Data> | {
-                        let (meta, Json(result)) = response.into_parts();
-                        if meta.status.is_success() {
-                            Msg::FetchSuccess(result.ok().unwrap())
-                        } else {
-                            Msg::FetchFail
-                        }
+                let callback = self.link.callback(move |response: FetchResponse<Data>| {
+                    let (meta, Json(result)) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::FetchSuccess(result.ok().unwrap())
+                    } else {
+                        Msg::FetchFail
                     }
-                );
+                });
 
                 // actual request body
-                let request = Request::get("http://localhost:8081/load").body(Nothing).unwrap();
+                let request = Request::get("http://localhost:8081/load")
+                    .body(Nothing)
+                    .unwrap();
 
                 // Setting out the request
                 let task = yew::services::FetchService::fetch(request, callback).unwrap();

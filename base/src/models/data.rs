@@ -9,7 +9,10 @@ pub struct Data {
 
 impl Data {
     pub fn new(value: i64) -> Self {
-        Data { value, ..Default::default() }
+        Data {
+            value,
+            ..Default::default()
+        }
     }
     pub fn update(&mut self, value: i64) {
         self.value = value

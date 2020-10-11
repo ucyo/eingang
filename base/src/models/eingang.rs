@@ -6,12 +6,12 @@
 
 #![allow(dead_code)]
 
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct NoteQuery {
     pub title: Option<String>,
-    pub content: Option<String>
+    pub content: Option<String>,
 }
 
 impl NoteQuery {
@@ -29,7 +29,6 @@ pub struct Note {
 }
 
 impl Note {
-
     /// Returns a new Note object by using only the content field. The title
     /// can be left empty and added later on.
     pub fn new(content: String) -> Self {
@@ -78,7 +77,7 @@ pub struct Task {
     pub title: String,
     pub content: String,
     pub status: TaskStatus,
-    meta: Meta
+    meta: Meta,
 }
 
 impl From<Note> for Task {
@@ -134,7 +133,7 @@ impl Default for TaskStatus {
 pub struct Thread {
     pub notes: Vec<Note>,
     pub tasks: Vec<Task>,
-    meta: Meta
+    meta: Meta,
 }
 
 impl Thread {
@@ -163,14 +162,14 @@ impl Thread {
     pub fn add_note(&mut self, note: Note) {
         self.notes.push(note)
     }
-    pub fn add_task(&mut self, task:Task) {
+    pub fn add_task(&mut self, task: Task) {
         self.tasks.push(task)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Note, Task, Thread, TaskStatus};
+    use super::{Note, Task, TaskStatus, Thread};
     #[test]
     fn create_note_and_cast_to_task() {
         let c = "content".to_string();
