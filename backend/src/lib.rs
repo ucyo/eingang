@@ -14,6 +14,5 @@ pub const THREAD_FOLDER: &str = "threads";
 pub const NOTE_FOLDER: &str = "notes";
 pub const TASK_FOLDER: &str = "tasks";
 
-
 // Modules
 pub mod routes;

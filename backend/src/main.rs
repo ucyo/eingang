@@ -2,7 +2,7 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer};
 use eingang_backend::routes::*;
-use eingang_backend::{HOST, PORT, FRONTEND_HOST, FRONTEND_PORT};
+use eingang_backend::{FRONTEND_HOST, FRONTEND_PORT, HOST, PORT};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -10,7 +10,8 @@ async fn main() -> std::io::Result<()> {
     let frontend = format!("{}:{}", FRONTEND_HOST, FRONTEND_PORT);
 
     HttpServer::new(move || {
-        App::new().wrap(Cors::new().allowed_origin(frontend.as_str()).finish())
+        App::new()
+            .wrap(Cors::new().allowed_origin(frontend.as_str()).finish())
             .service(index)
             .service(saving)
             .service(permanent)

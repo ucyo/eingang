@@ -9,9 +9,9 @@
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
+use actix_web::{delete, get, patch, post};
+use actix_web::{web, HttpRequest, HttpResponse, Result};
 use eingang::models::{Note, NoteQuery};
-use actix_web::{get, post, delete, patch};
-use actix_web::{HttpRequest, HttpResponse, Result, web};
 
 /// Return a vector of json serializeable data
 type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
@@ -24,10 +24,15 @@ type EingangResponse<T> = Result<web::Json<T>>;
 /// This route returns all notes saved on the filesystem.
 #[get("/notes")]
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
-    let folder = Path::new(BASE_FOLDER)
-        .join(NOTE_FOLDER);
-    let temp : Vec<_> = std::fs::read_dir(folder).unwrap().map(|e| e.map(|d| d.path())).collect();
-    let result:Vec<Note> = temp.into_iter().map(|f| read_note_filepath(&f.unwrap())).collect();
+    let folder = Path::new(BASE_FOLDER).join(NOTE_FOLDER);
+    let temp: Vec<_> = std::fs::read_dir(folder)
+        .unwrap()
+        .map(|e| e.map(|d| d.path()))
+        .collect();
+    let result: Vec<Note> = temp
+        .into_iter()
+        .map(|f| read_note_filepath(&f.unwrap()))
+        .collect();
     Ok(web::Json(result))
 }
 
@@ -35,13 +40,13 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
 async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     let nq = q.into_inner();
     if let None = nq.content {
-        return HttpResponse::BadRequest().json("Field 'content' is missing")
+        return HttpResponse::BadRequest().json("Field 'content' is missing");
     };
     let content = nq.content.unwrap();
     let title = nq.title.unwrap_or_default();
     let note = Note::with_title(content, title);
     save_note(&note);
-    HttpResponse::Ok().json(note.meta.uuid)  // TODO Better response messages. Maybe { http_code: 321, message: "" }
+    HttpResponse::Ok().json(note.meta.uuid) // TODO Better response messages. Maybe { http_code: 321, message: "" }
 }
 
 #[get("/notes/{uuid}")]
@@ -57,7 +62,7 @@ async fn delete_note(req: HttpRequest) -> HttpResponse {
     let file = create_filepath(uuid);
     match std::fs::remove_file(file) {
         Ok(_) => HttpResponse::NoContent().json("Successful"),
-        _ => HttpResponse::BadRequest().json("UUID is not associated")
+        _ => HttpResponse::BadRequest().json("UUID is not associated"),
     }
 }
 
@@ -84,15 +89,13 @@ async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse 
 }
 
 use crate::{BASE_FOLDER, NOTE_FOLDER};
-use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 
 fn create_filepath(uuid: String) -> PathBuf {
     let basename = format!("{}.json", uuid);
-    Path::new(BASE_FOLDER)
-        .join(NOTE_FOLDER)
-        .join(basename)
+    Path::new(BASE_FOLDER).join(NOTE_FOLDER).join(basename)
 }
 
 fn save_note(note: &Note) {
@@ -116,10 +119,9 @@ fn read_note(uuid: String) -> Note {
 }
 
 fn parse_uuid(req: HttpRequest) -> String {
-    req
-    .match_info()
-    .get("uuid")
-    .unwrap()  // TODO Better parsing, since this could panic
-    .parse()
-    .unwrap()
+    req.match_info()
+        .get("uuid")
+        .unwrap() // TODO Better parsing, since this could panic
+        .parse()
+        .unwrap()
 }
