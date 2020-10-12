@@ -5,7 +5,6 @@ use eingang::models::Data;
 use serde_qs as qs;
 use std::{fs::File, io::Write};
 
-
 /// Index method for simple counter
 ///
 /// Use route to (un)serialize information about the object
