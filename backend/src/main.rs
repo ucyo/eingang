@@ -1,8 +1,8 @@
 //! Main application for backend service.
 use actix_cors::Cors;
 use actix_web::http::header;
-use actix_web::{web, App, HttpServer};
-use eingang_backend::routes::*;
+use actix_web::{App, HttpServer};
+use eingang_backend::routes::{config, notes};
 use eingang_backend::{FRONTEND_HOST, FRONTEND_PORT, HOST, PORT};
 
 #[actix_web::main]
@@ -21,12 +21,8 @@ async fn main() -> std::io::Result<()> {
                     .max_age(3600)
                     .finish(),
             )
-            .service(web::resource("/json/{value}").route(web::get().to(index)))
-            .service(saving)
-            .service(permanent)
-            .service(serialize)
+            .configure(config)
             .configure(notes::config)
-            .service(loading)
     })
     .bind(&address)?
     .run()
