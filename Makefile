@@ -4,23 +4,17 @@ both: build
 	@echo "===================================================================="
 	@cargo run -p eingang-backend & miniserve ./static --index index.html
 
-frontend: build
-	@echo "===================================================================="
-	@echo "Serving files via miniserve"
-	@echo "===================================================================="
-	@miniserve ./static --index index.html
-
 build:
 	@echo "===================================================================="
 	@echo "Creating WebAssembly via wasm-pack"
 	@echo "===================================================================="
 	@wasm-pack build --target web --out-name wasm --out-dir ../static ./frontend/
 
-clean:
+frontend: build
 	@echo "===================================================================="
-	@echo "Erasing all files"
+	@echo "Serving files via miniserve"
 	@echo "===================================================================="
-	rm -f ./static/wasm* ./static/package.json
+	@miniserve ./static --index index.html
 
 backend:
 	@echo "===================================================================="
@@ -28,11 +22,10 @@ backend:
 	@echo "===================================================================="
 	@cargo run -p eingang-backend
 
-kill:
+clean:
 	@echo "===================================================================="
-	@echo "Killing backend and frontend"
+	@echo "Erasing all files"
 	@echo "===================================================================="
-	@killall eingang-backend & killall miniserve
+	rm -f ./static/wasm* ./static/package.json
 
-
-.PHONY: frontend build clean backend both kill
+.PHONY: both build frontend backend clean
