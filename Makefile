@@ -1,3 +1,9 @@
+both: build
+	@echo "===================================================================="
+	@echo "Starting backend and frontend"
+	@echo "===================================================================="
+	@cargo run -p eingang-backend & miniserve ./static --index index.html
+
 frontend: build
 	@echo "===================================================================="
 	@echo "Serving files via miniserve"
@@ -22,4 +28,11 @@ backend:
 	@echo "===================================================================="
 	@cargo run -p eingang-backend
 
-.PHONY: frontend build clean backend
+kill:
+	@echo "===================================================================="
+	@echo "Killing backend and frontend"
+	@echo "===================================================================="
+	@killall eingang-backend & killall miniserve
+
+
+.PHONY: frontend build clean backend both kill
