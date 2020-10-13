@@ -9,8 +9,9 @@
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
-use actix_web::{web, HttpRequest, HttpResponse, Result};
+use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Note, NoteQuery};
+use super::{EingangResponse, EingangVecResponse};
 
 /// Configure routes for Notes
 pub fn config(cfg: &mut web::ServiceConfig) {
