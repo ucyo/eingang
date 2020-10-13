@@ -21,12 +21,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/notes/{uuid}/update").route(web::patch().to(update_note)));
 }
 
-/// Return a vector of json serializeable data
-type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
-
-/// Return a json representation of serializable data
-type EingangResponse<T> = Result<web::Json<T>>;
-
 /// Return all Notes
 ///
 /// This route returns all notes saved on the filesystem.
