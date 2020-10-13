@@ -72,6 +72,19 @@ impl Meta {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct TaskQuery {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub status: Option<TaskStatus>,
+}
+
+impl TaskQuery {
+    fn new() -> Self {
+        TaskQuery::default()
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Task {
     pub title: String,
@@ -115,7 +128,7 @@ impl Task {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub enum TaskStatus {
     Open,
     Waiting,

@@ -61,3 +61,4 @@ async fn loading(_: HttpRequest) -> Result<web::Json<Data>> {
 }
 
 pub mod notes;
+pub mod tasks;
