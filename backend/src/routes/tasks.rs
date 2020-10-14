@@ -38,7 +38,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     // TODO Write a better matching, maybe with list of accepted values
     let mut status = TaskStatus::default();
     if let Some(stst) = tq.status {
-        match stst.as_str() {
+        match stst.to_lowercase().as_str() {
             "closed" | "done"  => status = TaskStatus::Closed,
             "deactivated" | "expired" => status = TaskStatus::Deactivated,
             "open" => status = TaskStatus::Open,
