@@ -15,7 +15,7 @@
 //! - `/tasks/new`: Create new task
 #![allow(unused_variables, unreachable_code)]
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Task, TaskQuery};
+use eingang::models::{Task, TaskQuery, TaskStatus};
 use super::{EingangVecResponse, EingangResponse};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -31,7 +31,26 @@ async fn get_all_tasks(q: web::Json<TaskQuery>) -> EingangVecResponse<Task> {
 }
 
 async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
-    unimplemented!()
+    let tq = q.into_inner();
+    if let None = tq.content {
+        return HttpResponse::BadRequest().json("Field 'content' is missing");
+    };
+    // TODO Write a better matching, maybe with list of accepted values
+    let mut status = TaskStatus::default();
+    if let Some(stst) = tq.status {
+        match stst.as_str() {
+            "closed" | "done"  => status = TaskStatus::Closed,
+            "deactivated" | "expired" => status = TaskStatus::Deactivated,
+            "open" => status = TaskStatus::Open,
+            "waiting" | "delegated" | "scheduled" => status = TaskStatus::Waiting,
+            _ => return HttpResponse::BadRequest().json("Field 'status' is wrong"),
+        }
+    };
+    let content = tq.content.unwrap();
+    let title = tq.title.unwrap_or_default();
+    let task = Task::with_title_and_status(content, title, status);
+    //TODO Actually save task
+    HttpResponse::Ok().json(task)
 }
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {

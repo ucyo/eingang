@@ -76,7 +76,7 @@ impl Meta {
 pub struct TaskQuery {
     pub title: Option<String>,
     pub content: Option<String>,
-    pub status: Option<TaskStatus>,
+    pub status: Option<String>,
 }
 
 impl TaskQuery {
@@ -90,7 +90,7 @@ pub struct Task {
     pub title: String,
     pub content: String,
     pub status: TaskStatus,
-    meta: Meta,
+    pub meta: Meta,
 }
 
 impl From<Note> for Task {
@@ -129,6 +129,7 @@ impl Task {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum TaskStatus {
     Open,
     Waiting,
