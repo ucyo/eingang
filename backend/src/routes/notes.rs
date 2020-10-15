@@ -10,10 +10,9 @@
 //! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
-use crate::io::{create_filepath, read_note, read_note_filepath, save_note};use crate::{BASE_FOLDER, NOTE_FOLDER};
+use crate::io::{Location, read_note, read_note_filepath, save_note};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Note, NoteQuery};
-use std::path::Path;
 
 
 /// Configure routes for Notes
@@ -29,7 +28,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 ///
 /// This route returns all notes saved on the filesystem.
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
-    let folder = Path::new(BASE_FOLDER).join(NOTE_FOLDER);
+    let folder = Location::Note.get_basefolder();
     let temp: Vec<_> = std::fs::read_dir(folder)
         .unwrap()
         .map(|e| e.map(|d| d.path()))
@@ -61,7 +60,7 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
 
 async fn delete_note(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let file = create_filepath(uuid);
+    let file = Location::Note.create_filename(uuid);
     match std::fs::remove_file(file) {
         Ok(_) => HttpResponse::NoContent().json("Successful"),
         _ => HttpResponse::BadRequest().json("UUID is not associated"),
