@@ -58,7 +58,9 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
 }
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
-    unimplemented!()
+    let uuid: String = parse_uuid(req);
+    let task = read_task(uuid);
+    Ok(web::Json(task))
 }
 
 async fn delete_task(req: HttpRequest) -> HttpResponse {
