@@ -9,8 +9,11 @@
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
 #![allow(unused_variables, unreachable_code)]
-use actix_web::{web, HttpRequest, HttpResponse, Result};
+use super::{EingangResponse, EingangVecResponse, parse_uuid};
+use crate::io::{Location, read_note, read_note_filepath, save_note};
+use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Note, NoteQuery};
+
 
 /// Configure routes for Notes
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -21,17 +24,11 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/notes/{uuid}/update").route(web::patch().to(update_note)));
 }
 
-/// Return a vector of json serializeable data
-type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
-
-/// Return a json representation of serializable data
-type EingangResponse<T> = Result<web::Json<T>>;
-
 /// Return all Notes
 ///
 /// This route returns all notes saved on the filesystem.
 async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
-    let folder = Path::new(BASE_FOLDER).join(NOTE_FOLDER);
+    let folder = Location::Note.get_basefolder();
     let temp: Vec<_> = std::fs::read_dir(folder)
         .unwrap()
         .map(|e| e.map(|d| d.path()))
@@ -63,7 +60,7 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
 
 async fn delete_note(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let file = create_filepath(uuid);
+    let file = Location::Note.create_filename(uuid);
     match std::fs::remove_file(file) {
         Ok(_) => HttpResponse::NoContent().json("Successful"),
         _ => HttpResponse::BadRequest().json("UUID is not associated"),
@@ -89,42 +86,4 @@ async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse 
         save_note(&note)
     }
     HttpResponse::NoContent().json("Successful")
-}
-
-use crate::{BASE_FOLDER, NOTE_FOLDER};
-use std::fs::File;
-use std::io::Write;
-use std::path::{Path, PathBuf};
-
-fn create_filepath(uuid: String) -> PathBuf {
-    let basename = format!("{}.json", uuid);
-    Path::new(BASE_FOLDER).join(NOTE_FOLDER).join(basename)
-}
-
-fn save_note(note: &Note) {
-    let file = create_filepath(note.meta.uuid.to_string());
-    let buffer = File::create(file).unwrap();
-    let mut writer = std::io::BufWriter::new(buffer);
-    let _ = serde_json::to_writer_pretty(&mut writer, &note).unwrap();
-    writer.flush().unwrap();
-}
-
-fn read_note_filepath(file: &PathBuf) -> Note {
-    let buffer = File::open(file).unwrap();
-    let rdr = std::io::BufReader::new(buffer);
-    let note: Note = serde_json::from_reader(rdr).unwrap();
-    note
-}
-
-fn read_note(uuid: String) -> Note {
-    let file = create_filepath(uuid);
-    read_note_filepath(&file)
-}
-
-fn parse_uuid(req: HttpRequest) -> String {
-    req.match_info()
-        .get("uuid")
-        .unwrap() // TODO Better parsing, since this could panic
-        .parse()
-        .unwrap()
 }

@@ -72,12 +72,25 @@ impl Meta {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct TaskQuery {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub status: Option<String>,
+}
+
+impl TaskQuery {
+    fn new() -> Self {
+        TaskQuery::default()
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Task {
     pub title: String,
     pub content: String,
     pub status: TaskStatus,
-    meta: Meta,
+    pub meta: Meta,
 }
 
 impl From<Note> for Task {
@@ -115,7 +128,8 @@ impl Task {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum TaskStatus {
     Open,
     Waiting,
@@ -126,6 +140,18 @@ pub enum TaskStatus {
 impl Default for TaskStatus {
     fn default() -> Self {
         TaskStatus::Open
+    }
+}
+
+impl From<String> for TaskStatus {
+    fn from(stst: String) -> Self {
+        match stst.to_lowercase().as_str() {
+            "closed" | "done" => TaskStatus::Closed,
+            "deactivated" | "expired" => TaskStatus::Deactivated,
+            "open" => TaskStatus::Open,
+            "waiting" | "delegated" | "scheduled" => TaskStatus::Waiting,
+            _ => panic!("Unknown status: {:?}", stst), // TODO Fix, not panic
+        }
     }
 }
 
