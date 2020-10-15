@@ -53,8 +53,8 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     let content = tq.content.unwrap();
     let title = tq.title.unwrap_or_default();
     let task = Task::with_title_and_status(content, title, status);
-    //TODO Actually save task
-    HttpResponse::Ok().json(task)
+    save_task(&task);
+    HttpResponse::Ok().json(task.meta.uuid)
 }
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
