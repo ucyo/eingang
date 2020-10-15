@@ -73,5 +73,27 @@ async fn delete_task(req: HttpRequest) -> HttpResponse {
 }
 
 async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse {
-    unimplemented!()
+    let uuid: String = parse_uuid(req);
+    let mut task = read_task(uuid);
+    let tq = q.into_inner();
+
+    let mut task_changed = false;
+    if let Some(c) = tq.content {
+        task.content = c;
+        task_changed = true;
+    }
+    if let Some(t) = tq.title {
+        task.title = t;
+        task_changed = true;
+    }
+    if let Some(s) = tq.status {
+        task.status = TaskStatus::from(s);
+        task_changed = true;
+    }
+
+    if task_changed {
+        task.meta.update_modified_date();
+        save_task(&task);
+    }
+    HttpResponse::NoContent().json("Successful")
 }
