@@ -38,13 +38,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     // TODO Write a better matching, maybe with list of accepted values
     let mut status = TaskStatus::default();
     if let Some(stst) = tq.status {
-        match stst.to_lowercase().as_str() {
-            "closed" | "done" => status = TaskStatus::Closed,
-            "deactivated" | "expired" => status = TaskStatus::Deactivated,
-            "open" => status = TaskStatus::Open,
-            "waiting" | "delegated" | "scheduled" => status = TaskStatus::Waiting,
-            _ => return HttpResponse::BadRequest().json("Field 'status' is wrong"),
-        }
+        status = TaskStatus::from(stst)
     };
     let content = tq.content.unwrap();
     let title = tq.title.unwrap_or_default();

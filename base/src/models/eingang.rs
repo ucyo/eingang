@@ -143,6 +143,18 @@ impl Default for TaskStatus {
     }
 }
 
+impl From<String> for TaskStatus {
+    fn from(stst: String) -> Self {
+        match stst.to_lowercase().as_str() {
+            "closed" | "done" => TaskStatus::Closed,
+            "deactivated" | "expired" => TaskStatus::Deactivated,
+            "open" => TaskStatus::Open,
+            "waiting" | "delegated" | "scheduled" => TaskStatus::Waiting,
+            _ => panic!("Unknown status: {:?}", stst), // TODO Fix, not panic
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Thread {
     pub notes: Vec<Note>,
