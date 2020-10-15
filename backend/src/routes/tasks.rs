@@ -64,7 +64,12 @@ async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
 }
 
 async fn delete_task(req: HttpRequest) -> HttpResponse {
-    unimplemented!()
+    let uuid: String = parse_uuid(req);
+    let file = Location::Task.create_filename(uuid);
+    match std::fs::remove_file(file) {
+        Ok(_) => HttpResponse::NoContent().json("Successful"),
+        _ => HttpResponse::BadRequest().json("UUID is not associated"),
+    }
 }
 
 async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse {
