@@ -9,6 +9,7 @@
 //!   - `status=done`: Return all done tasks
 //!   - `status=open`: Return all open tasks
 //!   - `status=waiting`: Return all waiting tasks
+//!   - if `status` is nonsense, it will be ignored
 //! - `/tasks/{uuid}`: Return a specific task
 //! - `/tasks/{uuid}/update`: Edit a specific task
 //! - `/tasks/{uuid}/delete`: Delete a specific task
@@ -27,17 +28,27 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks/{uuid}/update").route(web::patch().to(update_task)));
 }
 
-async fn get_all_tasks(req: HttpRequest) -> EingangVecResponse<Task> {
+async fn get_all_tasks(req: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecResponse<Task> {
+    let (do_filter, filter) = match q.into_inner().status {
+        Some(s) => {
+            match TaskStatus::from(s) {
+                Some(c) => (true, c),
+                _ => (false, TaskStatus::default())
+            }
+        },
+        _ => (false, TaskStatus::default()),
+    };
     let folder = Location::Task.get_basefolder();
-    let temp: Vec<_> = std::fs::read_dir(folder)
+    let temp = std::fs::read_dir(folder)
         .unwrap()
         .map(|e| e.map(|d| d.path()))
-        .collect();
-    let result: Vec<Task> = temp
-        .into_iter()
-        .map(|f| read_task_filepath(&f.unwrap()))
-        .collect();  // TODO Add filter based on q
-    Ok(web::Json(result))
+        .map(|f| read_task_filepath(&f.unwrap()));
+
+    if do_filter {
+        Ok(web::Json(temp.filter(|k | k.status == filter).collect()))
+    } else {
+        Ok(web::Json(temp.collect()))
+    }
 }
 
 async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
@@ -48,7 +59,10 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     // TODO Write a better matching, maybe with list of accepted values
     let mut status = TaskStatus::default();
     if let Some(stst) = tq.status {
-        status = TaskStatus::from(stst)
+        match TaskStatus::from(stst) {
+            Some(c) => status = c,
+            _ => return HttpResponse::BadRequest().json("Unknown status")
+        }
     };
     let content = tq.content.unwrap();
     let title = tq.title.unwrap_or_default();
@@ -87,7 +101,10 @@ async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse 
         task_changed = true;
     }
     if let Some(s) = tq.status {
-        task.status = TaskStatus::from(s);
+        match TaskStatus::from(s) {
+            Some(c) => task.status = c,
+            _ => return HttpResponse::BadRequest().json("Unknown status")
+        }
         task_changed = true;
     }
 

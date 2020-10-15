@@ -128,7 +128,7 @@ impl Task {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum TaskStatus {
     Open,
@@ -143,14 +143,14 @@ impl Default for TaskStatus {
     }
 }
 
-impl From<String> for TaskStatus {
-    fn from(stst: String) -> Self {
+impl TaskStatus {
+    pub fn from(stst: String) -> Option<Self> {
         match stst.to_lowercase().as_str() {
-            "closed" | "done" => TaskStatus::Closed,
-            "deactivated" | "expired" => TaskStatus::Deactivated,
-            "open" => TaskStatus::Open,
-            "waiting" | "delegated" | "scheduled" => TaskStatus::Waiting,
-            _ => panic!("Unknown status: {:?}", stst), // TODO Fix, not panic
+            "closed" | "done" => Some(TaskStatus::Closed),
+            "deactivated" | "expired" => Some(TaskStatus::Deactivated),
+            "open" => Some(TaskStatus::Open),
+            "waiting" | "delegated" | "scheduled" => Some(TaskStatus::Waiting),
+            _ => None
         }
     }
 }
