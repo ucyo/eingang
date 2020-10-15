@@ -27,8 +27,17 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks/{uuid}/update").route(web::patch().to(update_task)));
 }
 
-async fn get_all_tasks(q: web::Json<TaskQuery>) -> EingangVecResponse<Task> {
-    unimplemented!()
+async fn get_all_tasks(req: HttpRequest) -> EingangVecResponse<Task> {
+    let folder = Location::Task.get_basefolder();
+    let temp: Vec<_> = std::fs::read_dir(folder)
+        .unwrap()
+        .map(|e| e.map(|d| d.path()))
+        .collect();
+    let result: Vec<Task> = temp
+        .into_iter()
+        .map(|f| read_task_filepath(&f.unwrap()))
+        .collect();  // TODO Add filter based on q
+    Ok(web::Json(result))
 }
 
 async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
