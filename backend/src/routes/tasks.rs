@@ -14,9 +14,9 @@
 //! - `/tasks/{uuid}/delete`: Delete a specific task
 //! - `/tasks/new`: Create new task
 #![allow(unused_variables, unreachable_code)]
+use super::{EingangResponse, EingangVecResponse};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Task, TaskQuery, TaskStatus};
-use super::{EingangVecResponse, EingangResponse};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks").route(web::get().to(get_all_tasks)));
@@ -39,7 +39,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     let mut status = TaskStatus::default();
     if let Some(stst) = tq.status {
         match stst.to_lowercase().as_str() {
-            "closed" | "done"  => status = TaskStatus::Closed,
+            "closed" | "done" => status = TaskStatus::Closed,
             "deactivated" | "expired" => status = TaskStatus::Deactivated,
             "open" => status = TaskStatus::Open,
             "waiting" | "delegated" | "scheduled" => status = TaskStatus::Waiting,
