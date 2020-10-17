@@ -209,6 +209,15 @@ pub enum ThreadFilter {
     Notes,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum ThreadResponse {
+    Thread(Thread),
+    Task(Vec<Task>),
+    Note(Vec<Note>)
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::{Note, Task, TaskStatus, Thread};
