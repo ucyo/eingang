@@ -7,13 +7,15 @@
 //! ## Threads
 //! Threads
 //! - `/threads`: Returns a list of all threads
+//! - `/threads/new`: Create new thread
+//!   - `tasks=[uuid]`: Add a vector of tasks from thread
+//!   - `notes=[uuid]`: Add a vector of notes from thread
 //! - `/threads/{uuid}`: Returns a specific thread
 //!   - `filter=tasks`: Return only tasks from a specific thread
 //!   - `filter=notes`: Return only notes from a specific thread
-//! - `/threads/{uuid}/update`: Edit a specific note
+//! - `/threads/{uuid}/add`: Edit a specific note
+//!   - `task={uuid}`: Add task to thread
+//!   - `note={uuid}`: Add note to thread
 //! - `/threads/{uuid}/delete`: Delete a specific note
-//! - `/threads/new`: Create new thread
-//!
-//! Auto-Threads
-//! - `/journal`: Entries within a certain time period
-//! - `/graph`: Graph view of all threads in the system
+//!   - `task={uuid}`: Delete a task from thread
+//!   - `note={uuid}`: Delete a note from thread
