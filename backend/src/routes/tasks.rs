@@ -14,7 +14,6 @@
 //! - `/tasks/{uuid}/update`: Edit a specific task
 //! - `/tasks/{uuid}/delete`: Delete a specific task
 //! - `/tasks/new`: Create new task
-#![allow(unused_variables, unreachable_code)]
 use super::{EingangResponse, EingangVecResponse,parse_uuid};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Task, TaskQuery, TaskStatus, Idable};
@@ -28,7 +27,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks/{uuid}/update").route(web::patch().to(update_task)));
 }
 
-async fn get_all_tasks(req: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecResponse<Task> {
+async fn get_all_tasks(_: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecResponse<Task> {
     let (do_filter, filter) = match q.into_inner().status {
         Some(s) => {
             match TaskStatus::from(s) {

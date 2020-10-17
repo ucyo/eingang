@@ -7,9 +7,11 @@
 //! ## Threads
 //! Threads
 //! - `/threads`: Returns a list of all threads
+//!   - `filter=tasks`: Return all tasks from any thread
+//!   - `filter=notes`: Return all notes from any thread
 //! - `/threads/new`: Create new thread
-//!   - `tasks=[uuid]`: Add a vector of tasks from thread
-//!   - `notes=[uuid]`: Add a vector of notes from thread
+//!   - `tasks=[uuid]`: Vector of tasks to add for thread
+//!   - `notes=[uuid]`: Vector of notes to add for thread
 //! - `/threads/{uuid}`: Returns a specific thread
 //!   - `filter=tasks`: Return only tasks from a specific thread
 //!   - `filter=notes`: Return only notes from a specific thread
@@ -19,7 +21,6 @@
 //! - `/threads/{uuid}/delete`: Delete whole thread
 //!   - `task={uuid}`: Delete a task from thread
 //!   - `note={uuid}`: Delete a note from thread
-#![allow(unused_variables, unreachable_code)]
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
 use crate::io::{Location, read_thread, read_thread_filepath, save_thread};
 use actix_web::{web, HttpRequest, HttpResponse};
