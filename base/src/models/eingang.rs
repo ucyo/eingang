@@ -2,11 +2,12 @@
 //!
 //! In this crate all model and struct defintions regarding the
 //! `Note` componented are saved.
-
-
 #![allow(dead_code)]
-
 use serde::{Deserialize, Serialize};
+
+pub trait Idable {
+    fn get_uuid(&self) -> uuid::Uuid;
+}
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct NoteQuery {
@@ -25,7 +26,7 @@ impl NoteQuery {
 pub struct Note {
     pub title: String,
     pub content: String,
-    pub meta: Meta,
+    meta: Meta,
 }
 
 impl Note {
@@ -44,13 +45,23 @@ impl Note {
             ..Default::default()
         }
     }
+    pub fn update_modified_date(&mut self) {
+        self.meta.update_modified_date()
+    }
 }
 
+impl Idable for Note {
+    fn get_uuid(&self) -> uuid::Uuid {
+        self.meta.uuid
+    }
+}
+
+
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Meta {
-    pub created_on: chrono::DateTime<chrono::Utc>,
-    pub last_modified: chrono::DateTime<chrono::Utc>,
-    pub uuid: uuid::Uuid,
+struct Meta {
+    created_on: chrono::DateTime<chrono::Utc>,
+    last_modified: chrono::DateTime<chrono::Utc>,
+    uuid: uuid::Uuid,
 }
 
 impl Default for Meta {
@@ -90,7 +101,7 @@ pub struct Task {
     pub title: String,
     pub content: String,
     pub status: TaskStatus,
-    pub meta: Meta,
+    meta: Meta,
 }
 
 impl From<Note> for Task {
@@ -126,7 +137,17 @@ impl Task {
             ..Default::default()
         }
     }
+    pub fn update_modified_date(&mut self) {
+        self.meta.update_modified_date()
+    }
 }
+
+impl Idable for Task {
+    fn get_uuid(&self) -> uuid::Uuid {
+        self.meta.uuid
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -159,7 +180,7 @@ impl TaskStatus {
 pub struct Thread {
     pub notes: Vec<Note>,
     pub tasks: Vec<Task>,
-    pub meta: Meta,
+    meta: Meta,
 }
 
 impl Thread {
@@ -191,7 +212,17 @@ impl Thread {
     pub fn add_task(&mut self, task: Task) {
         self.tasks.push(task)
     }
+    pub fn update_modified_date(&mut self) {
+        self.meta.update_modified_date()
+    }
 }
+
+impl Idable for Thread {
+    fn get_uuid(&self) -> uuid::Uuid {
+        self.meta.uuid
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ThreadQuery {

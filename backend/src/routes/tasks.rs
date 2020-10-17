@@ -17,7 +17,7 @@
 #![allow(unused_variables, unreachable_code)]
 use super::{EingangResponse, EingangVecResponse,parse_uuid};
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Task, TaskQuery, TaskStatus};
+use eingang::models::{Task, TaskQuery, TaskStatus, Idable};
 use crate::io::{Location, read_task, read_task_filepath, save_task};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -68,7 +68,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     let title = tq.title.unwrap_or_default();
     let task = Task::with_title_and_status(content, title, status);
     save_task(&task);
-    HttpResponse::Ok().json(task.meta.uuid)
+    HttpResponse::Ok().json(task.get_uuid().to_string())
 }
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
@@ -109,7 +109,7 @@ async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse 
     }
 
     if task_changed {
-        task.meta.update_modified_date();
+        task.update_modified_date();
         save_task(&task);
     }
     HttpResponse::NoContent().json("Successful")

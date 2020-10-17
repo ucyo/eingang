@@ -12,7 +12,7 @@
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
 use crate::io::{Location, read_note, read_note_filepath, save_note};
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Note, NoteQuery};
+use eingang::models::{Note, NoteQuery, Idable};
 
 
 /// Configure routes for Notes
@@ -49,7 +49,7 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     let title = nq.title.unwrap_or_default();
     let note = Note::with_title(content, title);
     save_note(&note);
-    HttpResponse::Ok().json(note.meta.uuid) // TODO Better response messages. Maybe { http_code: 321, message: "" }
+    HttpResponse::Ok().json(note.get_uuid().to_string()) // TODO Better response messages. Maybe { http_code: 321, message: "" }
 }
 
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
@@ -82,7 +82,7 @@ async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse 
         note_changed = true
     }
     if note_changed {
-        note.meta.update_modified_date();
+        note.update_modified_date();
         save_note(&note)
     }
     HttpResponse::NoContent().json("Successful")

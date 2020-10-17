@@ -1,5 +1,5 @@
 use crate::{BASE_FOLDER, NOTE_FOLDER, TASK_FOLDER, THREAD_FOLDER};
-use eingang::models::{Note, Task};
+use eingang::models::{Note, Task, Thread, Idable};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -31,7 +31,7 @@ impl Location {
 }
 
 pub fn save_task(task: &Task) {
-    let file = Location::Task.create_filename(task.meta.uuid.to_string());
+    let file = Location::Task.create_filename(task.get_uuid().to_string());
     let buffer = File::create(file).unwrap();
     let mut writer = std::io::BufWriter::new(buffer);
     let _ = serde_json::to_writer_pretty(&mut writer, &task).unwrap();
@@ -39,7 +39,7 @@ pub fn save_task(task: &Task) {
 }
 
 pub fn save_note(note: &Note) {
-    let file = Location::Note.create_filename(note.meta.uuid.to_string());
+    let file = Location::Note.create_filename(note.get_uuid().to_string());
     let buffer = File::create(file).unwrap();
     let mut writer = std::io::BufWriter::new(buffer);
     let _ = serde_json::to_writer_pretty(&mut writer, &note).unwrap();
@@ -69,12 +69,11 @@ pub fn read_note(uuid: String) -> Note {
     read_note_filepath(&file)
 }
 
-use eingang::models::Thread;
-
 pub fn read_thread(uuid: String) -> Thread {
     let file = Location::Thread.create_filename(uuid);
     read_thread_filepath(&file)
     // TODO only difference to other read methods is the output
+    // TODO Maybe using actual UUID is better
 }
 
 pub fn read_thread_filepath(file: &PathBuf) -> Thread {
@@ -86,7 +85,7 @@ pub fn read_thread_filepath(file: &PathBuf) -> Thread {
 }
 
 pub fn save_thread(thread: &Thread) {
-    let file = Location::Thread.create_filename(thread.meta.uuid.to_string());
+    let file = Location::Thread.create_filename(thread.get_uuid().to_string());
     let buffer = File::create(file).unwrap();
     let mut writer = std::io::BufWriter::new(buffer);
     let _ = serde_json::to_writer_pretty(&mut writer, &thread).unwrap();
