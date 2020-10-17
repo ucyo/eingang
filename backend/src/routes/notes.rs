@@ -8,7 +8,6 @@
 //! - Http responses send by the backend to the user
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
-#![allow(unused_variables, unreachable_code)]
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
 use crate::io::{Location, read_note, read_note_filepath, save_note};
 use actix_web::{web, HttpRequest, HttpResponse};
@@ -27,7 +26,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 /// Return all Notes
 ///
 /// This route returns all notes saved on the filesystem.
-async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
+async fn get_all_notes(_: HttpRequest) -> EingangVecResponse<Note> {
     let folder = Location::Note.get_basefolder();
     let temp: Vec<_> = std::fs::read_dir(folder)
         .unwrap()
