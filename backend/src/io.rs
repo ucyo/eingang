@@ -46,41 +46,39 @@ pub fn save_note(note: &Note) {
     writer.flush().unwrap();
 }
 
-pub fn read_task_filepath(file: &PathBuf) -> Task {
+pub fn read_task_filepath(file: &PathBuf) -> Result<Task, serde_json::Error> {
     let buffer = File::open(file).unwrap();
     let rdr = std::io::BufReader::new(buffer);
-    serde_json::from_reader(rdr).unwrap()
+    serde_json::from_reader(rdr)
 }
 
-pub fn read_note_filepath(file: &PathBuf) -> Note {
+pub fn read_note_filepath(file: &PathBuf) -> Result<Note, serde_json::Error> {
     let buffer = File::open(file).unwrap();
     let rdr = std::io::BufReader::new(buffer);
-    let note: Note = serde_json::from_reader(rdr).unwrap();
-    note
+    serde_json::from_reader(rdr)
 }
 
-pub fn read_task(uuid: String) -> Task {
+pub fn read_task(uuid: String) -> Result<Task, serde_json::Error> {
     let file = Location::Task.create_filename(uuid);
     read_task_filepath(&file)
 }
 
-pub fn read_note(uuid: String) -> Note {
+pub fn read_note(uuid: String) -> Result<Note, serde_json::Error> {
     let file = Location::Note.create_filename(uuid);
     read_note_filepath(&file)
 }
 
-pub fn read_thread(uuid: String) -> Thread {
+pub fn read_thread(uuid: String) -> Result<Thread, serde_json::Error> {
     let file = Location::Thread.create_filename(uuid);
     read_thread_filepath(&file)
     // TODO only difference to other read methods is the output
     // TODO Maybe using actual UUID is better
 }
 
-pub fn read_thread_filepath(file: &PathBuf) -> Thread {
+pub fn read_thread_filepath(file: &PathBuf) -> Result<Thread, serde_json::Error> {
     let buffer = File::open(file).unwrap();
     let rdr = std::io::BufReader::new(buffer);
-    let thread: Thread = serde_json::from_reader(rdr).unwrap();
-    thread
+    serde_json::from_reader(rdr)
     // TODO only difference to other read methods is the output
 }
 
