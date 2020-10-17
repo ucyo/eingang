@@ -42,10 +42,10 @@ async fn get_all_tasks(req: HttpRequest, q: web::Query<TaskQuery>) -> EingangVec
     let temp = std::fs::read_dir(folder)
         .unwrap()
         .map(|e| e.map(|d| d.path()))
-        .map(|f| read_task_filepath(&f.unwrap()));
+        .map(|f| read_task_filepath(&f.unwrap()).unwrap());
 
     if do_filter {
-        Ok(web::Json(temp.filter(|k | k.status == filter).collect()))
+        Ok(web::Json(temp.filter(|k| k.status == filter).collect()))
     } else {
         Ok(web::Json(temp.collect()))
     }
@@ -73,7 +73,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
     let uuid: String = parse_uuid(req);
-    let task = read_task(uuid);
+    let task = read_task(uuid).unwrap();
     Ok(web::Json(task))
 }
 
@@ -88,7 +88,7 @@ async fn delete_task(req: HttpRequest) -> HttpResponse {
 
 async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let mut task = read_task(uuid);
+    let mut task = read_task(uuid).unwrap();
     let tq = q.into_inner();
 
     let mut task_changed = false;

@@ -35,7 +35,7 @@ async fn get_all_notes(req: HttpRequest) -> EingangVecResponse<Note> {
         .collect();
     let result: Vec<Note> = temp
         .into_iter()
-        .map(|f| read_note_filepath(&f.unwrap()))
+        .map(|f| read_note_filepath(&f.unwrap()).unwrap())
         .collect();
     Ok(web::Json(result))
 }
@@ -54,7 +54,7 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
 
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
-    let note = read_note(uuid);
+    let note = read_note(uuid).unwrap();
     Ok(web::Json(note))
 }
 
@@ -69,7 +69,7 @@ async fn delete_note(req: HttpRequest) -> HttpResponse {
 
 async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let mut note = read_note(uuid);
+    let mut note = read_note(uuid).unwrap();
     let nq = q.into_inner();
 
     let mut note_changed = false;
