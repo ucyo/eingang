@@ -37,14 +37,22 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/threads/{uuid}/new").route(web::post().to(extend_thread)));
 }
 
-async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangVecResponse<Thread> {
-    // TODO add filtering support
+async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangVecResponse<ThreadResponse> {
     let folder = Location::Thread.get_basefolder();
     let result: Vec<_> = std::fs::read_dir(folder).unwrap()
         .map(|e| e.map(|d| d.path()))
         .filter_map(|f| read_thread_filepath(&f.unwrap()).ok())
         .collect();
-    Ok(web::Json(result))
+    let query = q.into_inner();
+    let r = if query.filter.is_some() {
+       match query.filter.unwrap() {
+        ThreadFilter::Tasks => result.into_iter().map(|f| ThreadResponse::Tasks(f.tasks)).collect(),
+        ThreadFilter::Notes => result.into_iter().map(|f| ThreadResponse::Notes(f.notes)).collect(),
+       }
+    } else {
+        result.into_iter().map(|f| ThreadResponse::Threads(f)).collect()
+    };
+    Ok(web::Json(r))
 }
 
 async fn create_new_thread(q: web::Json<ThreadQuery>) -> HttpResponse {

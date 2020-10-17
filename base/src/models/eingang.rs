@@ -247,9 +247,9 @@ pub enum ThreadFilter {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
 pub enum ThreadResponse {
-    Thread(Thread),
-    Task(Vec<Task>),
-    Note(Vec<Note>)
+    Threads(Thread),
+    Tasks(Vec<TaskUuid>),
+    Notes(Vec<NoteUuid>)
 }
 
 
