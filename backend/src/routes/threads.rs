@@ -131,7 +131,28 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
     }
 }
 
-async   fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
-    unimplemented!()
+async fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
+    let uuid: String = parse_uuid(req);
+    let mut thread = read_thread(&uuid).unwrap();
+    let query = q.into_inner();
+
+    if query.task.is_some() && query.note.is_some() {
+        return HttpResponse::BadRequest().json("Either remove task or note")
+    }
+
+    if query.task.is_some() {
+        let task = read_task(&query.task.unwrap()).unwrap();
+        thread.add_task(task.get_uuid());
+        println!("{:#?}", thread);
+        save_thread(&thread);
+        return HttpResponse::NoContent().json("Task added");
+    } else if query.note.is_some() {
+        let note = read_note(&query.note.unwrap()).unwrap();
+        thread.add_note(note.get_uuid());
+        save_thread(&thread);
+        return HttpResponse::NoContent().json("Note added");
+    } else {
+        HttpResponse::BadRequest().json("No task or note given to add")
+    }
 }
 
