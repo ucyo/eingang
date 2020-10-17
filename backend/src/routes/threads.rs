@@ -23,4 +23,25 @@
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
 use crate::io::{Location, read_thread, read_thread_filepath, save_thread};
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Thread, ThreadFilter, ThreadQuery};
+use eingang::models::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
+
+async fn get_all_threads(req: HttpRequest) -> EingangVecResponse<Thread> {
+    unimplemented!()
+}
+
+async fn create_new_thread(tq: web::Json<Thread>) -> HttpResponse {
+    unimplemented!()
+}
+
+async fn get_thread(req: HttpRequest, filter: web::Query<ThreadFilter>) -> EingangResponse<ThreadResponse> {
+    unimplemented!()
+}
+
+async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
+    unimplemented!()
+}
+
+async   fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
+    unimplemented!()
+}
+
