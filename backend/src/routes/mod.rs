@@ -62,6 +62,7 @@ async fn loading(_: HttpRequest) -> Result<web::Json<Data>> {
 
 pub mod notes;
 pub mod tasks;
+pub mod threads;
 
 /// Return a vector of json serializeable data
 pub type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
