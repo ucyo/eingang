@@ -52,12 +52,13 @@ async fn get_all_tasks(_: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecRe
 
 async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
     let tq = q.into_inner();
-    if let None = tq.content {
+    if tq.content.is_none() {
         return HttpResponse::BadRequest().json("Field 'content' is missing");
     };
     // TODO Write a better matching, maybe with list of accepted values
     let mut status = TaskStatus::default();
-    if let Some(stst) = tq.status {
+    if tq.status.is_some() {
+        let stst = tq.status.unwrap();
         match TaskStatus::from(stst) {
             Some(c) => status = c,
             _ => return HttpResponse::BadRequest().json("Unknown status")
@@ -72,13 +73,13 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
     let uuid: String = parse_uuid(req);
-    let task = read_task(uuid).unwrap();
+    let task = read_task(&uuid).unwrap();
     Ok(web::Json(task))
 }
 
 async fn delete_task(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let file = Location::Task.create_filename(uuid);
+    let file = Location::Task.create_filename(&uuid);
     match std::fs::remove_file(file) {
         Ok(_) => HttpResponse::NoContent().json("Successful"),
         _ => HttpResponse::BadRequest().json("UUID is not associated"),
@@ -87,7 +88,7 @@ async fn delete_task(req: HttpRequest) -> HttpResponse {
 
 async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let mut task = read_task(uuid).unwrap();
+    let mut task = read_task(&uuid).unwrap();
     let tq = q.into_inner();
 
     let mut task_changed = false;
