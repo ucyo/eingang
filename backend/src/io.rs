@@ -27,7 +27,7 @@ impl Location {
             Location::Task => Location::Task.get_basefolder().join(filename),
             Location::Thread => Location::Thread.get_basefolder().join(filename),
         }
-    } 
+    }
 }
 
 pub fn save_task(task: &Task) {
@@ -67,4 +67,18 @@ pub fn read_task(uuid: String) -> Task {
 pub fn read_note(uuid: String) -> Note {
     let file = Location::Note.create_filename(uuid);
     read_note_filepath(&file)
+}
+
+use eingang::models::Thread;
+
+pub fn read_thread(uuid: String) -> Thread {
+    unimplemented!()
+}
+
+pub fn read_thread_filepath(file: &PathBuf) -> Thread {
+    unimplemented!()
+}
+
+pub fn save_thread(thread: &Thread) {
+    unimplemented!()
 }
