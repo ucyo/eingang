@@ -13,10 +13,10 @@
 //! - `/threads/{uuid}`: Returns a specific thread
 //!   - `filter=tasks`: Return only tasks from a specific thread
 //!   - `filter=notes`: Return only notes from a specific thread
-//! - `/threads/{uuid}/add`: Edit a specific note
+//! - `/threads/{uuid}/new`: Edit a specific note
 //!   - `task={uuid}`: Add task to thread
 //!   - `note={uuid}`: Add note to thread
-//! - `/threads/{uuid}/delete`: Delete a specific note
+//! - `/threads/{uuid}/delete`: Delete whole thread
 //!   - `task={uuid}`: Delete a task from thread
 //!   - `note={uuid}`: Delete a note from thread
 #![allow(unused_variables, unreachable_code)]
