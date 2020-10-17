@@ -176,11 +176,14 @@ impl TaskStatus {
     }
 }
 
+pub type NoteUuid = uuid::Uuid;
+pub type TaskUuid = uuid::Uuid;
+
 // TODO Make Thread to actually only save UUID, and not(!) the note or thread
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Thread {
-    pub notes: Vec<Note>,
-    pub tasks: Vec<Task>,
+    pub notes: Vec<NoteUuid>,
+    pub tasks: Vec<TaskUuid>,
     meta: Meta,
 }
 
@@ -188,29 +191,29 @@ impl Thread {
     pub fn new() -> Self {
         Default::default()
     }
-    pub fn with_notes(notes: Vec<Note>) -> Self {
+    pub fn with_notes(notes: Vec<NoteUuid>) -> Self {
         Thread {
             notes,
             ..Default::default()
         }
     }
-    pub fn with_tasks(tasks: Vec<Task>) -> Self {
+    pub fn with_tasks(tasks: Vec<TaskUuid>) -> Self {
         Thread {
             tasks,
             ..Default::default()
         }
     }
-    pub fn with_tasks_and_notes(tasks: Vec<Task>, notes: Vec<Note>) -> Self {
+    pub fn with_tasks_and_notes(tasks: Vec<TaskUuid>, notes: Vec<NoteUuid>) -> Self {
         Thread {
             tasks,
             notes,
             ..Default::default()
         }
     }
-    pub fn add_note(&mut self, note: Note) {
+    pub fn add_note(&mut self, note: NoteUuid) {
         self.notes.push(note)
     }
-    pub fn add_task(&mut self, task: Task) {
+    pub fn add_task(&mut self, task: TaskUuid) {
         self.tasks.push(task)
     }
     pub fn update_modified_date(&mut self) {
@@ -252,7 +255,8 @@ pub enum ThreadResponse {
 
 #[cfg(test)]
 mod tests {
-    use super::{Note, Task, TaskStatus, Thread};
+    use super::{Note, Task, TaskStatus, Thread, Idable};
+
     #[test]
     fn create_note_and_cast_to_task() {
         let c = "content".to_string();
@@ -269,9 +273,9 @@ mod tests {
         let note = Note::new("note".to_string());
         let task = Task::new("task".to_string());
         let mut thread = Thread::new();
-        thread.add_note(note);
-        thread.add_task(task);
-        assert_eq!(thread.tasks[0].content, "task");
-        assert_eq!(thread.notes[0].content, "note");
+        thread.add_note(note.get_uuid());
+        thread.add_task(task.get_uuid());
+        assert_eq!(thread.tasks[0], task.get_uuid());
+        assert_eq!(thread.notes[0], note.get_uuid());
     }
 }
