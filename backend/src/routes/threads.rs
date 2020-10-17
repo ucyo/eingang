@@ -25,6 +25,16 @@ use crate::io::{Location, read_thread, read_thread_filepath, save_thread};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
 
+
+/// Configure routes for Threads
+pub fn config(cfg: &mut web::ServiceConfig) {
+    cfg.service(web::resource("/threads").route(web::get().to(get_all_threads)));
+    cfg.service(web::resource("/threads/new").route(web::post().to(create_new_thread)));
+    cfg.service(web::resource("/threads/{uuid}").route(web::get().to(get_thread)));
+    cfg.service(web::resource("/threads/{uuid}/delete").route(web::delete().to(delete_thread)));
+    cfg.service(web::resource("/threads/{uuid}/new").route(web::post().to(extend_thread)));
+}
+
 async fn get_all_threads(req: HttpRequest) -> EingangVecResponse<Thread> {
     unimplemented!()
 }
