@@ -211,10 +211,12 @@ impl Thread {
         }
     }
     pub fn add_note(&mut self, note: NoteUuid) {
-        self.notes.push(note)
+        self.notes.push(note);
+        self.update_modified_date();
     }
     pub fn add_task(&mut self, task: TaskUuid) {
-        self.tasks.push(task)
+        self.tasks.push(task);
+        self.update_modified_date();
     }
     pub fn update_modified_date(&mut self) {
         self.meta.update_modified_date()
