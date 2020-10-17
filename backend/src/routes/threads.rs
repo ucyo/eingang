@@ -34,7 +34,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/threads/new").route(web::post().to(create_new_thread)));
     cfg.service(web::resource("/threads/{uuid}").route(web::get().to(get_thread)));
     cfg.service(web::resource("/threads/{uuid}/delete").route(web::delete().to(delete_thread)));
-    cfg.service(web::resource("/threads/{uuid}/new").route(web::post().to(extend_thread)));
+    cfg.service(web::resource("/threads/{uuid}/add").route(web::patch().to(extend_thread)));
 }
 
 async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangVecResponse<ThreadResponse> {
