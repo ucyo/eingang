@@ -98,6 +98,7 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
         return HttpResponse::BadRequest().json("Either remove task or note from Thread")
     }
 
+    // TODO Move deletion in `eingang-base`
     if query.task.is_some() {
         let mut thread = read_thread(&uuid).unwrap();
         let task_uuid = query.task.unwrap();
@@ -105,6 +106,7 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
         match pos {
             Some(p) => {
                 thread.tasks.remove(p);
+                thread.update_modified_date();
                 save_thread(&thread);
                 HttpResponse::NoContent().json("Successful")
             },
@@ -117,6 +119,7 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
         match pos {
             Some(p) => {
                 thread.notes.remove(p);
+                thread.update_modified_date();
                 save_thread(&thread);
                 HttpResponse::NoContent().json("Successful")
             },
