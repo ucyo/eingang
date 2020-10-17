@@ -176,6 +176,7 @@ impl TaskStatus {
     }
 }
 
+// TODO Make Thread to actually only save UUID, and not(!) the note or thread
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Thread {
     pub notes: Vec<Note>,
