@@ -91,7 +91,44 @@ async fn get_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> EingangResp
 }
 
 async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
-    unimplemented!()
+    let uuid: String = parse_uuid(req);
+    let query = q.into_inner();
+
+    if query.task.is_some() && query.note.is_some() {
+        return HttpResponse::BadRequest().json("Either remove task or note from Thread")
+    }
+
+    if query.task.is_some() {
+        let mut thread = read_thread(&uuid).unwrap();
+        let task_uuid = query.task.unwrap();
+        let pos = thread.tasks.iter().position(|t| t.to_string() == task_uuid);
+        match pos {
+            Some(p) => {
+                thread.tasks.remove(p);
+                save_thread(&thread);
+                HttpResponse::NoContent().json("Successful")
+            },
+            None => HttpResponse::BadRequest().json("Task UUID is not associated")
+        }
+    } else if query.note.is_some() {
+        let mut thread = read_thread(&uuid).unwrap();
+        let note_uuid = query.note.unwrap();
+        let pos = thread.notes.iter().position(|n| n.to_string() == note_uuid);
+        match pos {
+            Some(p) => {
+                thread.notes.remove(p);
+                save_thread(&thread);
+                HttpResponse::NoContent().json("Successful")
+            },
+            None => HttpResponse::BadRequest().json("Note UUID is not associated")
+        }
+    } else {
+        let file = Location::Thread.create_filename(&uuid);
+        match std::fs::remove_file(file) {
+            Ok(_) => HttpResponse::NoContent().json("Successful"),
+            _ => HttpResponse::BadRequest().json("UUID is not associated"),
+        }
+    }
 }
 
 async   fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
