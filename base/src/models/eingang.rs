@@ -193,6 +193,22 @@ impl Thread {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct ThreadQuery {
+    task: Option<String>,
+    tasks: Option<Vec<String>>,
+    note: Option<String>,
+    notes: Option<Vec<String>>,
+    filter: Option<ThreadFilter>,
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+pub enum ThreadFilter {
+    Tasks,
+    Notes,
+}
+
 #[cfg(test)]
 mod tests {
     use super::{Note, Task, TaskStatus, Thread};
