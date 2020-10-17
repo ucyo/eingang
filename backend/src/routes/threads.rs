@@ -75,8 +75,19 @@ async fn create_new_thread(q: web::Json<ThreadQuery>) -> HttpResponse {
     HttpResponse::Ok().json(thread)
 }
 
-async fn get_thread(req: HttpRequest, filter: web::Query<ThreadFilter>) -> EingangResponse<ThreadResponse> {
-    unimplemented!()
+async fn get_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> EingangResponse<ThreadResponse> {
+    let uuid: String = parse_uuid(req);
+    let thread = read_thread(&uuid).unwrap();
+    let query = q.into_inner();
+    let r = if query.filter.is_some() {
+       match query.filter.unwrap() {
+        ThreadFilter::Tasks => ThreadResponse::Tasks(thread.tasks),
+        ThreadFilter::Notes => ThreadResponse::Notes(thread.notes),
+       }
+    } else {
+        ThreadResponse::Threads(thread)
+    };
+    Ok(web::Json(r))
 }
 
 async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResponse {
