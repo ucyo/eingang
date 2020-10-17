@@ -25,7 +25,8 @@ use super::{EingangResponse, EingangVecResponse, parse_uuid};
 use crate::io::{Location, read_thread, read_thread_filepath, save_thread};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
-
+use crate::io::{read_note, read_task};
+use eingang::models::{Idable, TaskUuid, NoteUuid};
 
 /// Configure routes for Threads
 pub fn config(cfg: &mut web::ServiceConfig) {
