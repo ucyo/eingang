@@ -72,13 +72,24 @@ pub fn read_note(uuid: String) -> Note {
 use eingang::models::Thread;
 
 pub fn read_thread(uuid: String) -> Thread {
-    unimplemented!()
+    let file = Location::Thread.create_filename(uuid);
+    read_thread_filepath(&file)
+    // TODO only difference to other read methods is the output
 }
 
 pub fn read_thread_filepath(file: &PathBuf) -> Thread {
-    unimplemented!()
+    let buffer = File::open(file).unwrap();
+    let rdr = std::io::BufReader::new(buffer);
+    let thread: Thread = serde_json::from_reader(rdr).unwrap();
+    thread
+    // TODO only difference to other read methods is the output
 }
 
 pub fn save_thread(thread: &Thread) {
-    unimplemented!()
+    let file = Location::Thread.create_filename(thread.meta.uuid.to_string());
+    let buffer = File::create(file).unwrap();
+    let mut writer = std::io::BufWriter::new(buffer);
+    let _ = serde_json::to_writer_pretty(&mut writer, &thread).unwrap();
+    writer.flush().unwrap();
+    // TODO only difference to other save methods is the input type
 }

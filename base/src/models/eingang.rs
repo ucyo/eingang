@@ -159,7 +159,7 @@ impl TaskStatus {
 pub struct Thread {
     pub notes: Vec<Note>,
     pub tasks: Vec<Task>,
-    meta: Meta,
+    pub meta: Meta,
 }
 
 impl Thread {
