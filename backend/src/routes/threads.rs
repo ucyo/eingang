@@ -41,8 +41,24 @@ async fn get_all_threads(req: HttpRequest) -> EingangVecResponse<Thread> {
     unimplemented!()
 }
 
-async fn create_new_thread(tq: web::Json<Thread>) -> HttpResponse {
-    unimplemented!()
+async fn create_new_thread(q: web::Json<ThreadQuery>) -> HttpResponse {
+    // TODO breaks when UUID is not valid, should return BadRequest
+    let tq = q.into_inner();
+    let tasks: Vec<TaskUuid> = tq.tasks
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|uuid| read_task(&uuid).ok())
+        .map(|uuid| uuid.get_uuid())
+        .collect();
+    let notes: Vec<NoteUuid> = tq.notes
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|uuid| read_note(&uuid).ok())
+        .map(|uuid| uuid.get_uuid())
+        .collect();
+    let thread = Thread::with_tasks_and_notes(tasks, notes);
+    save_thread(&thread);
+    HttpResponse::Ok().json(thread)
 }
 
 async fn get_thread(req: HttpRequest, filter: web::Query<ThreadFilter>) -> EingangResponse<ThreadResponse> {
