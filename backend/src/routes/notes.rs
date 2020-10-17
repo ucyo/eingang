@@ -28,20 +28,16 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 /// This route returns all notes saved on the filesystem.
 async fn get_all_notes(_: HttpRequest) -> EingangVecResponse<Note> {
     let folder = Location::Note.get_basefolder();
-    let temp: Vec<_> = std::fs::read_dir(folder)
-        .unwrap()
+    let result: Vec<_> = std::fs::read_dir(folder).unwrap()
         .map(|e| e.map(|d| d.path()))
-        .collect();
-    let result: Vec<Note> = temp
-        .into_iter()
-        .map(|f| read_note_filepath(&f.unwrap()).unwrap())
+        .filter_map(|f| read_note_filepath(&f.unwrap()).ok())
         .collect();
     Ok(web::Json(result))
 }
 
 async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
     let nq = q.into_inner();
-    if let None = nq.content {
+    if nq.content.is_none() {
         return HttpResponse::BadRequest().json("Field 'content' is missing");
     };
     let content = nq.content.unwrap();
@@ -53,13 +49,13 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
 
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
-    let note = read_note(uuid).unwrap();
+    let note = read_note(&uuid).unwrap();
     Ok(web::Json(note))
 }
 
 async fn delete_note(req: HttpRequest) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let file = Location::Note.create_filename(uuid);
+    let file = Location::Note.create_filename(&uuid);
     match std::fs::remove_file(file) {
         Ok(_) => HttpResponse::NoContent().json("Successful"),
         _ => HttpResponse::BadRequest().json("UUID is not associated"),
@@ -68,7 +64,7 @@ async fn delete_note(req: HttpRequest) -> HttpResponse {
 
 async fn update_note(req: HttpRequest, q: web::Json<NoteQuery>) -> HttpResponse {
     let uuid: String = parse_uuid(req);
-    let mut note = read_note(uuid).unwrap();
+    let mut note = read_note(&uuid).unwrap();
     let nq = q.into_inner();
 
     let mut note_changed = false;
