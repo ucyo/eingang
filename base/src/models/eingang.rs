@@ -226,11 +226,11 @@ impl Idable for Thread {
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ThreadQuery {
-    task: Option<String>,
-    tasks: Option<Vec<String>>,
-    note: Option<String>,
-    notes: Option<Vec<String>>,
-    filter: Option<ThreadFilter>,
+    pub task: Option<String>,
+    pub tasks: Option<Vec<String>>,
+    pub note: Option<String>,
+    pub notes: Option<Vec<String>>,
+    pub filter: Option<ThreadFilter>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
