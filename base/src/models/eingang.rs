@@ -56,7 +56,6 @@ impl Idable for Note {
     }
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 struct Meta {
     created_on: chrono::DateTime<chrono::Utc>,
@@ -82,6 +81,28 @@ impl Meta {
         self.last_modified = chrono::Utc::now()
     }
 }
+
+// use std::cmp::Ordering;
+
+// impl Ord for Meta {
+//     fn cmp(&self, other: &Self) -> Ordering {
+//         self.last_modified.cmp(&other.last_modified)
+//     }
+// }
+
+// impl PartialOrd for Meta {
+//     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+//         Some(self.last_modified.cmp(&other.last_modified))
+//     }
+// }
+
+// impl Eq for Meta {}
+
+// impl PartialEq for Meta {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.last_modified == other.last_modified
+//     }
+// }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TaskQuery {
