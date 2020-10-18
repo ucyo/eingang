@@ -254,37 +254,30 @@ pub enum ThreadResponse {
     Notes(Vec<NoteUuid>)
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct JournalQuery {
-    pub after:  Option<Vec<Moment>>,
-    pub before: Option<Vec<Moment>>,
+    pub after:  Option<String>,
+    pub before: Option<String>,
     pub during: Option<Period>,
     pub untouched: Option<Period>,
-    pub kind: Option<ThreadFilter>,
+}
+
+#[derive(Serialize, Default, Deserialize, Debug)]
+pub struct Period {
+    year: Option<u32>,
+    month: Option<u32>,
+    week: Option<u32>,
+    day: Option<u32>,
+    hour: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
-pub enum Moment {
-    Year,
-    Month,
-    Date,
-    Hour,
-    Minute,
+pub enum JournalResponse {
+    Thread(Thread),
+    Note(Note),
+    Task(Task),
 }
-
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "lowercase")]
-pub enum Period {
-    Year,
-    Month,
-    Week,
-    Day,
-    Hour,
-}
-
 
 #[cfg(test)]
 mod tests {
