@@ -257,16 +257,12 @@ pub enum ThreadResponse {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct JournalQuery {
-    pub filter: Option<JournalFilter>,
+    pub after:  Option<Vec<Moment>>,
+    pub before: Option<Vec<Moment>>,
+    pub during: Option<Period>,
+    pub untouched: Option<Period>,
+    pub kind: Option<ThreadFilter>,
 }
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "lowercase")]
-pub enum JournalFilter {
-    Moment(Vec<Moment>),
-    Period(Period),
-}
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
