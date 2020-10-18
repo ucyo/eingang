@@ -16,7 +16,7 @@ use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{JournalResponse, JournalQuery};
 
 /// Return a vector of json serializeable data
-pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>;
+pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>;  // TODO Apply this setup also to the others
 
 /// Configure routes for Journal view
 pub fn config(cfg: &mut web::ServiceConfig) {
