@@ -82,6 +82,13 @@ impl Meta {
     }
 }
 
+// TODO Figure out ordering of methods
+// Notes should be compared by content
+// Tasks compared by content
+// threads not at all (for the moment)
+// Time and Notes.meta.lastmodified
+// Sortable by status for Tasks
+
 // use std::cmp::Ordering;
 
 // impl Ord for Meta {
