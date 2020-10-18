@@ -14,3 +14,4 @@ eingang = { path = "../base/" }
 serde_json = "1.0.*"
 env_logger = "0.7.*"
 uuid = { version = "0.8.*", features = ["serde", "wasm-bindgen", "v4"]}
+chrono = { version = "0.4.*", features = ["serde", "wasmbind"]}
