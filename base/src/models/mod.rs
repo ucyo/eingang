@@ -5,4 +5,5 @@ pub use self::eingang::{Note, NoteQuery};
 pub use self::eingang::{Task, TaskQuery, TaskStatus};
 pub use self::eingang::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
 pub use self::eingang::{Idable, TaskUuid, NoteUuid};
+pub use self::eingang::{JournalFilter, JournalQuery, Period, Moment};
 pub use data::Data;
