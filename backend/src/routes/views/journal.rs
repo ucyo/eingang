@@ -24,5 +24,14 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 async fn journal(_: HttpRequest, q: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
+    // TODO Use query and not json object
+    let query = q.into_inner();
+    if query.during.is_some() && query.untouched.is_some() {
+        return Err(HttpResponse::BadRequest().json("Either during OR untouched"))
+    }
+    if (query.during.is_some() || query.untouched.is_some()) && (query.before.is_some() || query.after.is_some()) {
+        return Err(HttpResponse::BadRequest().json("Either time period OR moment"))
+    }
+    // from here on further the queries should be valid
     unimplemented!()
 }
