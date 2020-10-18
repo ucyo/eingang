@@ -255,6 +255,41 @@ pub enum ThreadResponse {
 }
 
 
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct JournalQuery {
+    pub filter: Option<JournalFilter>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum JournalFilter {
+    Moment(Vec<Moment>),
+    Period(Period),
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum Moment {
+    Year,
+    Month,
+    Date,
+    Hour,
+    Minute,
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum Period {
+    Year,
+    Month,
+    Week,
+    Day,
+    Hour,
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::{Note, Task, TaskStatus, Thread, Idable};
