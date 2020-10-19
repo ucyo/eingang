@@ -11,6 +11,22 @@ pub struct JournalQuery {
     pub before: Option<String>,
     pub during: Option<Period>,
     pub untouched: Option<Period>,
+    pub filter: Option<JournalFilter>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+pub enum JournalFilter {
+    Threads,
+    Notes,
+    Tasks,
+    All
+}
+
+impl Default for JournalFilter {
+    fn default() -> Self {
+        JournalFilter::All
+    }
 }
 
 impl JournalQuery {
