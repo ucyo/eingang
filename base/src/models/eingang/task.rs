@@ -88,3 +88,17 @@ impl TaskStatus {
         }
     }
 }
+
+use super::Timestamp;
+
+impl PartialOrd<Timestamp> for Task {
+    fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
+        self.meta.partial_cmp(&other)
+    }
+}
+
+impl PartialEq<Timestamp> for Task {
+    fn eq(&self, other: &Timestamp) -> bool {
+        self.meta == *other
+    }
+}
