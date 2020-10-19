@@ -23,13 +23,13 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/journal").route(web::get().to(journal)));
 }
 
-async fn journal(_: HttpRequest, q: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
+async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
     // TODO Use query and not json object
-    let query = q.into_inner();
-    if query.during.is_some() && query.untouched.is_some() {
+    let data = d.into_inner();
+    if data.during.is_some() && data.untouched.is_some() {
         return Err(HttpResponse::BadRequest().json("Either during OR untouched"))
     }
-    if (query.during.is_some() || query.untouched.is_some()) && (query.before.is_some() || query.after.is_some()) {
+    if (data.during.is_some() || data.untouched.is_some()) && (data.before.is_some() || data.after.is_some()) {
         return Err(HttpResponse::BadRequest().json("Either time period OR moment"))
     }
     // from here on further the queries should be valid
