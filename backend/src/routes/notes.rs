@@ -9,7 +9,7 @@
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
-use crate::io::{Location, read_note, read_note_filepath, save_note};
+use crate::io::{Location, read_note, save_note, get_all_notes as gan};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Note, NoteQuery, Idable};
 
@@ -27,11 +27,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 ///
 /// This route returns all notes saved on the filesystem.
 async fn get_all_notes(_: HttpRequest) -> EingangVecResponse<Note> {
-    let folder = Location::Note.get_basefolder();
-    let result: Vec<_> = std::fs::read_dir(folder).unwrap()
-        .map(|e| e.map(|d| d.path()))
-        .filter_map(|f| read_note_filepath(&f.unwrap()).ok())
-        .collect();
+    let result = gan().unwrap();
     Ok(web::Json(result))
 }
 

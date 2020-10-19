@@ -99,3 +99,12 @@ pub fn get_all_tasks() ->  Result<Vec<Task>, std::io::Error> {
         .collect();
     Ok(temp)
 }
+
+pub fn get_all_notes() -> Result<Vec<Note>, std::io::Error> {
+    let folder = Location::Note.get_basefolder();
+    let result = std::fs::read_dir(folder)?
+        .map(|e| e.map(|d| d.path()))
+        .filter_map(|f| read_note_filepath(&f.unwrap()).ok())
+        .collect();
+    Ok(result)
+}
