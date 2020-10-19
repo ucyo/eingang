@@ -1,10 +1,14 @@
 //! Routes of the backend service
+//!
+//! **Ideally all routes are just one/two liner and simple function calls to the backend**
+//!
 use crate::STORAGE;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, Result};
 use eingang::models::Data;
 use serde_qs as qs;
 use std::{fs::File, io::Write};
 
+// TODO Make oneliner to io
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("json/{value}").route(web::get().to(index)));
     cfg.service(web::resource("/query").route(web::get().to(saving)));
