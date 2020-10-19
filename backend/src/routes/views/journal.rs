@@ -13,7 +13,7 @@
 //! Therefore only the cases `after`, `before`, and `after` and `before` needs
 //! to be implemented.
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{JournalResponse, JournalQuery};
+use eingang::models::{JournalResponse, JournalQuery, JournalFilter};
 
 /// Return a vector of json serializeable data
 pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>;  // TODO Apply this setup also to the others
@@ -23,8 +23,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/journal").route(web::get().to(journal)));
 }
 
+// TODO Use query and not json object
 async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
-    // TODO Use query and not json object
     let data = d.into_inner();
     if data.during.is_some() && data.untouched.is_some() {
         return Err(HttpResponse::BadRequest().json("Either during OR untouched"))
@@ -32,20 +32,31 @@ async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecRespon
     if (data.during.is_some() || data.untouched.is_some()) && (data.before.is_some() || data.after.is_some()) {
         return Err(HttpResponse::BadRequest().json("Either time period OR moment"))
     }
+    let filter = data.filter.unwrap_or_default();
 
-    // testing
-
-    if data.during.is_some() {
-        let reference = &data.during.unwrap();
-        let ts = reference.to_timestamp();
-        println!("During {:#?}", ts);
+    match filter {
+        JournalFilter::All => {
+            return Err(HttpResponse::BadRequest().json("All filtering not yet implemented"))
+        },
+        JournalFilter::Notes => {
+            return Err(HttpResponse::BadRequest().json("Note filtering not yet implemented"))
+        },
+        JournalFilter::Tasks => {
+            return Err(HttpResponse::BadRequest().json("Task filtering not yet implemented"))
+        },
+        JournalFilter::Threads => {
+            return Err(HttpResponse::BadRequest().json("Thread filtering not yet implemented"))
+        },
     }
-    // testing
-    if data.before.is_some() {
-        let reference = &data.before_to_timestamp().unwrap();
-        println!("Untouched {:#?}", reference);
-    }
-    println!("{:#?}", data.filter.unwrap_or_default());
-    // from here on further the queries should be valid
-    unimplemented!()
+    // if data.during.is_some() {
+    //     let reference = &data.during.unwrap();
+    //     let ts = reference.to_timestamp();
+    //     println!("During {:#?}", ts);
+    // }
+    // // testing
+    // if data.before.is_some() {
+    //     let reference = &data.before_to_timestamp().unwrap();
+    //     println!("Untouched {:#?}", reference);
+    // }
+    // println!("{:#?}", data.filter.unwrap_or_default());
 }
