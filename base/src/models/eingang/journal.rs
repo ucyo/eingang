@@ -25,3 +25,20 @@ pub enum JournalResponse {
     Note(Note),
     Task(Task),
 }
+
+impl Period {
+
+    fn to_timedelta(&self) -> chrono::Duration {
+        let delta = chrono::Duration::weeks(self.year.unwrap_or_default() as i64 * 52) +
+            chrono::Duration::weeks(self.month.unwrap_or_default() as i64 * 4) +
+            chrono::Duration::weeks(self.week.unwrap_or_default() as i64) +
+            chrono::Duration::days(self.day.unwrap_or_default() as i64) +
+            chrono::Duration::hours(self.hour.unwrap_or_default() as i64);
+        - delta
+    }
+
+    pub fn to_timestamp(&self) -> Timestamp {
+        let now = chrono::Utc::now();
+        now + self.to_timedelta()
+    }
+}
