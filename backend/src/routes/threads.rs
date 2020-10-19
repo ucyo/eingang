@@ -22,10 +22,10 @@
 //!   - `task={uuid}`: Delete a task from thread
 //!   - `note={uuid}`: Delete a note from thread
 use super::{EingangResponse, EingangVecResponse, parse_uuid};
-use crate::io::{Location, read_thread, read_thread_filepath, save_thread};
+use crate::io::{Location, read_thread, save_thread};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
-use crate::io::{read_note, read_task};
+use crate::io::{read_note, read_task, get_all_threads as gat};
 use eingang::models::{Idable, TaskUuid, NoteUuid};
 
 /// Configure routes for Threads
@@ -38,11 +38,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangVecResponse<ThreadResponse> {
-    let folder = Location::Thread.get_basefolder();
-    let result: Vec<_> = std::fs::read_dir(folder).unwrap()
-        .map(|e| e.map(|d| d.path()))
-        .filter_map(|f| read_thread_filepath(&f.unwrap()).ok())
-        .collect();
+    let result = gat().unwrap();
     let query = q.into_inner();
     let r = if query.filter.is_some() {
        match query.filter.unwrap() {
@@ -158,4 +154,3 @@ async fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
         HttpResponse::BadRequest().json("No task or note given to add")
     }
 }
-
