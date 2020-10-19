@@ -69,3 +69,17 @@ mod tests {
         assert_eq!(thread.notes[0], note.get_uuid());
     }
 }
+
+use super::Timestamp;
+
+impl PartialOrd<Timestamp> for Note {
+    fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
+        self.meta.partial_cmp(&other)
+    }
+}
+
+impl PartialEq<Timestamp> for Note {
+    fn eq(&self, other: &Timestamp) -> bool {
+        self.meta == *other
+    }
+}
