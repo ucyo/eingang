@@ -32,6 +32,20 @@ async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecRespon
     if (data.during.is_some() || data.untouched.is_some()) && (data.before.is_some() || data.after.is_some()) {
         return Err(HttpResponse::BadRequest().json("Either time period OR moment"))
     }
+
+    // testing
+
+    if data.during.is_some() {
+        let reference = &data.during.unwrap();
+        let ts = reference.to_timestamp();
+        println!("During {:#?}", ts);
+    }
+    // testing
+    if data.before.is_some() {
+        let reference = &data.before_to_timestamp().unwrap();
+        println!("Untouched {:#?}", reference);
+    }
+    println!("{:#?}", data.filter.unwrap_or_default());
     // from here on further the queries should be valid
     unimplemented!()
 }
