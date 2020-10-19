@@ -17,7 +17,7 @@
 use super::{EingangResponse, EingangVecResponse,parse_uuid};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{Task, TaskQuery, TaskStatus, Idable};
-use crate::io::{Location, read_task, read_task_filepath, save_task};
+use crate::io::{Location, read_task, save_task, get_all_tasks as gat};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks").route(web::get().to(get_all_tasks)));
@@ -37,12 +37,7 @@ async fn get_all_tasks(_: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecRe
         },
         _ => (false, TaskStatus::default()),
     };
-    let folder = Location::Task.get_basefolder();
-    let temp = std::fs::read_dir(folder)
-        .unwrap()
-        .map(|e| e.map(|d| d.path()))
-        .map(|f| read_task_filepath(&f.unwrap()).unwrap());
-
+    let temp = gat().unwrap_or_default().into_iter();
     if do_filter {
         Ok(web::Json(temp.filter(|k| k.status == filter).collect()))
     } else {
