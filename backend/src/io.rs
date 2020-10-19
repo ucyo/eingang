@@ -90,3 +90,12 @@ pub fn save_thread(thread: &Thread) {
     writer.flush().unwrap();
     // TODO only difference to other save methods is the input type
 }
+
+pub fn get_all_tasks() ->  Result<Vec<Task>, std::io::Error> {
+    let folder = Location::Task.get_basefolder();
+    let temp = std::fs::read_dir(folder)?
+        .map(|e| e.map(|d| d.path()))
+        .map(|f| read_task_filepath(&f.unwrap()).unwrap())
+        .collect();
+    Ok(temp)
+}
