@@ -78,3 +78,18 @@ pub enum ThreadResponse {
     Tasks(Vec<TaskUuid>),
     Notes(Vec<NoteUuid>)
 }
+
+
+use super::Timestamp;
+
+impl PartialOrd<Timestamp> for Thread {
+    fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
+        self.meta.partial_cmp(&other)
+    }
+}
+
+impl PartialEq<Timestamp> for Thread {
+    fn eq(&self, other: &Timestamp) -> bool {
+        self.meta == *other
+    }
+}
