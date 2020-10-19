@@ -44,7 +44,7 @@ impl JournalQuery {
     }
 }
 
-#[derive(Serialize, Default, Deserialize, Debug)]
+#[derive(Serialize, Default, Deserialize, Debug, Copy, Clone)]
 pub struct Period {
     year: Option<u32>,
     month: Option<u32>,
@@ -64,16 +64,15 @@ pub enum JournalResponse {
 impl Period {
 
     fn to_timedelta(&self) -> chrono::Duration {
-        let delta = chrono::Duration::weeks(self.year.unwrap_or_default() as i64 * 52) +
-            chrono::Duration::weeks(self.month.unwrap_or_default() as i64 * 4) +
-            chrono::Duration::weeks(self.week.unwrap_or_default() as i64) +
-            chrono::Duration::days(self.day.unwrap_or_default() as i64) +
-            chrono::Duration::hours(self.hour.unwrap_or_default() as i64);
-        - delta
+        chrono::Duration::days(self.year.unwrap_or_default() as i64 * 365) +
+        chrono::Duration::days(self.month.unwrap_or_default() as i64 * 30) +
+        chrono::Duration::weeks(self.week.unwrap_or_default() as i64) +
+        chrono::Duration::days(self.day.unwrap_or_default() as i64) +
+        chrono::Duration::hours(self.hour.unwrap_or_default() as i64)
     }
 
     pub fn to_timestamp(&self) -> Timestamp {
-        let now = chrono::Utc::now();
-        now + self.to_timedelta()
+        let delta = self.to_timedelta();
+        chrono::Utc::now().checked_sub_signed(delta).unwrap()
     }
 }
