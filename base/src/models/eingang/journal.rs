@@ -19,7 +19,7 @@ impl JournalQuery {
             Some(s) => {
                 match NaiveDate::parse_from_str(s.as_str(), TIME).ok() {
                     Some(s) => {
-                        let ndt = s.and_hms(0, 0, 1);
+                        let ndt = s.and_hms(23, 59, 59);
                         Some(Timestamp::from_utc(ndt, chrono::Utc))
                     },
                     _ => None,
@@ -33,7 +33,7 @@ impl JournalQuery {
             Some(s) => {
                 match NaiveDate::parse_from_str(s.as_str(), TIME).ok() {
                     Some(s) => {
-                        let ndt = s.and_hms(23, 59, 59);
+                        let ndt = s.and_hms(0, 0, 1);
                         Some(Timestamp::from_utc(ndt, chrono::Utc))
                     },
                     _ => None,
