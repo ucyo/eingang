@@ -23,8 +23,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/journal").route(web::get().to(journal)));
 }
 
-use chrono::{DateTime, NaiveDate, Utc};
-
 async fn journal(_: HttpRequest, q: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
     // TODO Use query and not json object
     let query = q.into_inner();
@@ -36,15 +34,4 @@ async fn journal(_: HttpRequest, q: web::Json<JournalQuery>) -> EingangVecRespon
     }
     // from here on further the queries should be valid
     unimplemented!()
-}
-
-// TODO Should make the parsing string a config
-fn parse_from_str_excluding(s: &str) -> DateTime<Utc> {
-    let ndt = NaiveDate::parse_from_str(&s, "%Y-%m-%d").unwrap().and_hms(0, 0, 1);
-    DateTime::<Utc>::from_utc(ndt, Utc)
-}
-
-fn parse_from_str_including(s: &str) -> DateTime<Utc> {
-    let ndt = NaiveDate::parse_from_str(&s, "%Y-%m-%d").unwrap().and_hms(23, 59, 59);
-    DateTime::<Utc>::from_utc(ndt, Utc)
 }
