@@ -108,3 +108,12 @@ pub fn get_all_notes() -> Result<Vec<Note>, std::io::Error> {
         .collect();
     Ok(result)
 }
+
+pub fn get_all_threads() -> Result<Vec<Thread>, std::io::Error> {
+    let folder = Location::Thread.get_basefolder();
+    let result = std::fs::read_dir(folder).unwrap()
+        .map(|e| e.map(|d| d.path()))
+        .filter_map(|f| read_thread_filepath(&f.unwrap()).ok())
+        .collect();
+    Ok(result)
+}
