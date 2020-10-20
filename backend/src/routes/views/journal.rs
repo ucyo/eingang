@@ -14,6 +14,7 @@
 //! to be implemented.
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{JournalFilter, JournalQuery, JournalResponse};
+use crate::io::{get_all_notes, filter_notes};
 
 /// Return a vector of json serializeable data
 pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>; // TODO Apply this setup also to the others
@@ -44,7 +45,24 @@ async fn journal(
             return Err(HttpResponse::BadRequest().json("All filtering not yet implemented"))
         }
         JournalFilter::Notes => {
-            return Err(HttpResponse::BadRequest().json("Note filtering not yet implemented"))
+            let notes = get_all_notes().unwrap();
+            if data.during.is_some() {
+                let tstamp = data.during.unwrap().to_timestamp();
+                println!("After {:#?}", tstamp);
+                let filtered = filter_notes(notes, None, Some(tstamp));
+                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+                return Ok(web::Json(result))
+        } else if data.untouched.is_some() {
+            let tstamp = data.untouched.unwrap().to_timestamp();
+                println!("Before {:#?}", tstamp);
+                let filtered = filter_notes(notes, Some(tstamp), None);
+            let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+            return Ok(web::Json(result))
+        } else {
+                let filtered = filter_notes(notes, data.before_to_timestamp(), data.after_to_timestamp());
+                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+                return Ok(web::Json(result))
+            }
         }
         JournalFilter::Tasks => {
             return Err(HttpResponse::BadRequest().json("Task filtering not yet implemented"))
