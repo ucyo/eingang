@@ -15,6 +15,8 @@
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{JournalFilter, JournalQuery, JournalResponse};
 use crate::io::{get_all_notes, filter_notes};
+use crate::io::{get_all_tasks, filter_tasks};
+use crate::io::{get_all_threads, filter_threads};
 
 /// Return a vector of json serializeable data
 pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>; // TODO Apply this setup also to the others
@@ -48,16 +50,14 @@ async fn journal(
             let notes = get_all_notes().unwrap();
             if data.during.is_some() {
                 let tstamp = data.during.unwrap().to_timestamp();
-                println!("After {:#?}", tstamp);
                 let filtered = filter_notes(notes, None, Some(tstamp));
                 let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
                 return Ok(web::Json(result))
         } else if data.untouched.is_some() {
-            let tstamp = data.untouched.unwrap().to_timestamp();
-                println!("Before {:#?}", tstamp);
+                let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_notes(notes, Some(tstamp), None);
-            let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
-            return Ok(web::Json(result))
+                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+                return Ok(web::Json(result))
         } else {
                 let filtered = filter_notes(notes, data.before_to_timestamp(), data.after_to_timestamp());
                 let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
@@ -65,10 +65,40 @@ async fn journal(
             }
         }
         JournalFilter::Tasks => {
-            return Err(HttpResponse::BadRequest().json("Task filtering not yet implemented"))
+            let tasks = get_all_tasks().unwrap();
+            if data.during.is_some() {
+                let tstamp = data.during.unwrap().to_timestamp();
+                let filtered = filter_tasks(tasks, None, Some(tstamp));
+                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+                return Ok(web::Json(result))
+        } else if data.untouched.is_some() {
+                let tstamp = data.untouched.unwrap().to_timestamp();
+                let filtered = filter_tasks(tasks, Some(tstamp), None);
+                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+                return Ok(web::Json(result))
+        } else {
+                let filtered = filter_tasks(tasks, data.before_to_timestamp(), data.after_to_timestamp());
+                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+                return Ok(web::Json(result))
+            }
         }
         JournalFilter::Threads => {
-            return Err(HttpResponse::BadRequest().json("Thread filtering not yet implemented"))
+            let threads = get_all_threads().unwrap();
+            if data.during.is_some() {
+                let tstamp = data.during.unwrap().to_timestamp();
+                let filtered = filter_threads(threads, None, Some(tstamp));
+                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+                return Ok(web::Json(result))
+        } else if data.untouched.is_some() {
+                let tstamp = data.untouched.unwrap().to_timestamp();
+                let filtered = filter_threads(threads, Some(tstamp), None);
+                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+                return Ok(web::Json(result))
+        } else {
+                let filtered = filter_threads(threads, data.before_to_timestamp(), data.after_to_timestamp());
+                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+                return Ok(web::Json(result))
+            }
         }
     }
 }
