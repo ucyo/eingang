@@ -58,13 +58,13 @@ impl JournalQuery {
 
 #[derive(Serialize, Default, Deserialize, Debug, Copy, Clone)]
 pub struct Period {
-    year: Option<u32>,
-    month: Option<u32>,
-    week: Option<u32>,
-    day: Option<u32>,
-    hour: Option<u32>,
-    minute: Option<u32>,
-    second: Option<u32>,
+    years: Option<u32>,
+    months: Option<u32>,
+    weeks: Option<u32>,
+    days: Option<u32>,
+    hours: Option<u32>,
+    minutes: Option<u32>,
+    seconds: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -77,13 +77,13 @@ pub enum JournalResponse {
 
 impl Period {
     fn to_timedelta(&self) -> chrono::Duration {
-        chrono::Duration::days(self.year.unwrap_or_default() as i64 * 365)
-            + chrono::Duration::days(self.month.unwrap_or_default() as i64 * 30)
-            + chrono::Duration::weeks(self.week.unwrap_or_default() as i64)
-            + chrono::Duration::days(self.day.unwrap_or_default() as i64)
-            + chrono::Duration::hours(self.hour.unwrap_or_default() as i64)
-            + chrono::Duration::minutes(self.minute.unwrap_or_default() as i64)
-            + chrono::Duration::seconds(self.second.unwrap_or_default() as i64)
+        chrono::Duration::days(self.years.unwrap_or_default() as i64 * 365)
+            + chrono::Duration::days(self.months.unwrap_or_default() as i64 * 30)
+            + chrono::Duration::weeks(self.weeks.unwrap_or_default() as i64)
+            + chrono::Duration::days(self.days.unwrap_or_default() as i64)
+            + chrono::Duration::hours(self.hours.unwrap_or_default() as i64)
+            + chrono::Duration::minutes(self.minutes.unwrap_or_default() as i64)
+            + chrono::Duration::seconds(self.seconds.unwrap_or_default() as i64)
     }
 
     pub fn to_timestamp(&self) -> Timestamp {
