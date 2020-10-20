@@ -8,11 +8,10 @@
 //! - Http responses send by the backend to the user
 //! - Available routes for the user
 //! - Helper functions for interaction with the underlying filesystem
-use super::{EingangResponse, EingangVecResponse, parse_uuid};
-use crate::io::{Location, read_note, save_note, get_all_notes as gan};
+use super::{parse_uuid, EingangResponse, EingangVecResponse};
+use crate::io::{get_all_notes as gan, read_note, save_note, Location};
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Note, NoteQuery, Idable};
-
+use eingang::models::{Idable, Note, NoteQuery};
 
 /// Configure routes for Notes
 pub fn config(cfg: &mut web::ServiceConfig) {

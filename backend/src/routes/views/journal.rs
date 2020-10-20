@@ -13,10 +13,10 @@
 //! Therefore only the cases `after`, `before`, and `after` and `before` needs
 //! to be implemented.
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{JournalResponse, JournalQuery, JournalFilter};
+use eingang::models::{JournalFilter, JournalQuery, JournalResponse};
 
 /// Return a vector of json serializeable data
-pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>;  // TODO Apply this setup also to the others
+pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>; // TODO Apply this setup also to the others
 
 /// Configure routes for Journal view
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -24,28 +24,33 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 }
 
 // TODO Use query and not json object
-async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecResponseError<JournalResponse> {
+async fn journal(
+    _: HttpRequest,
+    d: web::Json<JournalQuery>,
+) -> EingangVecResponseError<JournalResponse> {
     let data = d.into_inner();
     if data.during.is_some() && data.untouched.is_some() {
-        return Err(HttpResponse::BadRequest().json("Either during OR untouched"))
+        return Err(HttpResponse::BadRequest().json("Either during OR untouched"));
     }
-    if (data.during.is_some() || data.untouched.is_some()) && (data.before.is_some() || data.after.is_some()) {
-        return Err(HttpResponse::BadRequest().json("Either time period OR moment"))
+    if (data.during.is_some() || data.untouched.is_some())
+        && (data.before.is_some() || data.after.is_some())
+    {
+        return Err(HttpResponse::BadRequest().json("Either time period OR moment"));
     }
     let filter = data.filter.unwrap_or_default();
 
     match filter {
         JournalFilter::All => {
             return Err(HttpResponse::BadRequest().json("All filtering not yet implemented"))
-        },
+        }
         JournalFilter::Notes => {
             return Err(HttpResponse::BadRequest().json("Note filtering not yet implemented"))
-        },
+        }
         JournalFilter::Tasks => {
             return Err(HttpResponse::BadRequest().json("Task filtering not yet implemented"))
-        },
+        }
         JournalFilter::Threads => {
             return Err(HttpResponse::BadRequest().json("Thread filtering not yet implemented"))
-        },
+        }
     }
 }

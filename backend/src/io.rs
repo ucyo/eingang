@@ -1,10 +1,10 @@
 use crate::{BASE_FOLDER, NOTE_FOLDER, TASK_FOLDER, THREAD_FOLDER};
-use eingang::models::{Note, Task, Thread, Idable};
+use eingang::models::eingang::Timestamp;
+use eingang::models::{Idable, Note, Task, Thread};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use eingang::models::eingang::Timestamp;
 
 /// Information about the location of each content type
 pub enum Location {
@@ -92,7 +92,7 @@ pub fn save_thread(thread: &Thread) {
     // TODO only difference to other save methods is the input type
 }
 
-pub fn get_all_tasks() ->  Result<Vec<Task>, std::io::Error> {
+pub fn get_all_tasks() -> Result<Vec<Task>, std::io::Error> {
     let folder = Location::Task.get_basefolder();
     let temp = std::fs::read_dir(folder)?
         .map(|e| e.map(|d| d.path()))
@@ -112,75 +112,78 @@ pub fn get_all_notes() -> Result<Vec<Note>, std::io::Error> {
 
 pub fn get_all_threads() -> Result<Vec<Thread>, std::io::Error> {
     let folder = Location::Thread.get_basefolder();
-    let result = std::fs::read_dir(folder).unwrap()
+    let result = std::fs::read_dir(folder)
+        .unwrap()
         .map(|e| e.map(|d| d.path()))
         .filter_map(|f| read_thread_filepath(&f.unwrap()).ok())
         .collect();
     Ok(result)
 }
 
-pub fn filter_notes(notes: Vec<Note>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Note> {
+pub fn filter_notes(
+    notes: Vec<Note>,
+    before: Option<Timestamp>,
+    after: Option<Timestamp>,
+) -> Vec<Note> {
     if before.is_some() && after.is_some() {
-        let result: Vec<Note> = notes.into_iter()
+        let result: Vec<Note> = notes
+            .into_iter()
             .filter(|f| *f > after.unwrap())
             .filter(|f| *f < before.unwrap())
             .collect();
-        return result
+        return result;
     } else if before.is_some() {
-        let result: Vec<Note> = notes.into_iter()
-            .filter(|f| *f < before.unwrap())
-            .collect();
-        return result
+        let result: Vec<Note> = notes.into_iter().filter(|f| *f < before.unwrap()).collect();
+        return result;
     } else if after.is_some() {
-        let result: Vec<Note> = notes.into_iter()
-            .filter(|f| *f > after.unwrap())
-            .collect();
-        return result
+        let result: Vec<Note> = notes.into_iter().filter(|f| *f > after.unwrap()).collect();
+        return result;
     } else {
         notes
     }
 }
 
-
-pub fn filter_tasks(notes: Vec<Task>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Task> {
+pub fn filter_tasks(
+    notes: Vec<Task>,
+    before: Option<Timestamp>,
+    after: Option<Timestamp>,
+) -> Vec<Task> {
     if before.is_some() && after.is_some() {
-        let result: Vec<Task> = notes.into_iter()
+        let result: Vec<Task> = notes
+            .into_iter()
             .filter(|f| *f > after.unwrap())
             .filter(|f| *f < before.unwrap())
             .collect();
-        return result
+        return result;
     } else if before.is_some() {
-        let result: Vec<Task> = notes.into_iter()
-            .filter(|f| *f < before.unwrap())
-            .collect();
-        return result
+        let result: Vec<Task> = notes.into_iter().filter(|f| *f < before.unwrap()).collect();
+        return result;
     } else if after.is_some() {
-        let result: Vec<Task> = notes.into_iter()
-            .filter(|f| *f > after.unwrap())
-            .collect();
-        return result
+        let result: Vec<Task> = notes.into_iter().filter(|f| *f > after.unwrap()).collect();
+        return result;
     } else {
         notes
     }
 }
 
-pub fn filter_threads(notes: Vec<Thread>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Thread> {
+pub fn filter_threads(
+    notes: Vec<Thread>,
+    before: Option<Timestamp>,
+    after: Option<Timestamp>,
+) -> Vec<Thread> {
     if before.is_some() && after.is_some() {
-        let result: Vec<Thread> = notes.into_iter()
+        let result: Vec<Thread> = notes
+            .into_iter()
             .filter(|f| *f > after.unwrap())
             .filter(|f| *f < before.unwrap())
             .collect();
-        return result
+        return result;
     } else if before.is_some() {
-        let result: Vec<Thread> = notes.into_iter()
-            .filter(|f| *f < before.unwrap())
-            .collect();
-        return result
+        let result: Vec<Thread> = notes.into_iter().filter(|f| *f < before.unwrap()).collect();
+        return result;
     } else if after.is_some() {
-        let result: Vec<Thread> = notes.into_iter()
-            .filter(|f| *f > after.unwrap())
-            .collect();
-        return result
+        let result: Vec<Thread> = notes.into_iter().filter(|f| *f > after.unwrap()).collect();
+        return result;
     } else {
         notes
     }

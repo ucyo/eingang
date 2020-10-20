@@ -14,10 +14,10 @@
 //! - `/tasks/{uuid}/update`: Edit a specific task
 //! - `/tasks/{uuid}/delete`: Delete a specific task
 //! - `/tasks/new`: Create new task
-use super::{EingangResponse, EingangVecResponse,parse_uuid};
+use super::{parse_uuid, EingangResponse, EingangVecResponse};
+use crate::io::{get_all_tasks as gat, read_task, save_task, Location};
 use actix_web::{web, HttpRequest, HttpResponse};
-use eingang::models::{Task, TaskQuery, TaskStatus, Idable};
-use crate::io::{Location, read_task, save_task, get_all_tasks as gat};
+use eingang::models::{Idable, Task, TaskQuery, TaskStatus};
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/tasks").route(web::get().to(get_all_tasks)));
@@ -29,11 +29,9 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 
 async fn get_all_tasks(_: HttpRequest, q: web::Query<TaskQuery>) -> EingangVecResponse<Task> {
     let (do_filter, filter) = match q.into_inner().status {
-        Some(s) => {
-            match TaskStatus::from(s) {
-                Some(c) => (true, c),
-                _ => (false, TaskStatus::default())
-            }
+        Some(s) => match TaskStatus::from(s) {
+            Some(c) => (true, c),
+            _ => (false, TaskStatus::default()),
         },
         _ => (false, TaskStatus::default()),
     };
@@ -56,7 +54,7 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
         let stst = tq.status.unwrap();
         match TaskStatus::from(stst) {
             Some(c) => status = c,
-            _ => return HttpResponse::BadRequest().json("Unknown status")
+            _ => return HttpResponse::BadRequest().json("Unknown status"),
         }
     };
     let content = tq.content.unwrap();
@@ -98,7 +96,7 @@ async fn update_task(req: HttpRequest, q: web::Json<TaskQuery>) -> HttpResponse 
     if let Some(s) = tq.status {
         match TaskStatus::from(s) {
             Some(c) => task.status = c,
-            _ => return HttpResponse::BadRequest().json("Unknown status")
+            _ => return HttpResponse::BadRequest().json("Unknown status"),
         }
         task_changed = true;
     }

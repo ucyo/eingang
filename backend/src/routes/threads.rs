@@ -21,12 +21,12 @@
 //! - `/threads/{uuid}/delete`: Delete whole thread
 //!   - `task={uuid}`: Delete a task from thread
 //!   - `note={uuid}`: Delete a note from thread
-use super::{EingangResponse, EingangVecResponse, parse_uuid};
-use crate::io::{Location, read_thread, save_thread};
+use super::{parse_uuid, EingangResponse, EingangVecResponse};
+use crate::io::{get_all_threads as gat, read_note, read_task};
+use crate::io::{read_thread, save_thread, Location};
 use actix_web::{web, HttpRequest, HttpResponse};
+use eingang::models::{Idable, NoteUuid, TaskUuid};
 use eingang::models::{Thread, ThreadFilter, ThreadQuery, ThreadResponse};
-use crate::io::{read_note, read_task, get_all_threads as gat};
-use eingang::models::{Idable, TaskUuid, NoteUuid};
 
 /// Configure routes for Threads
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -37,16 +37,28 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(web::resource("/threads/{uuid}/add").route(web::patch().to(extend_thread)));
 }
 
-async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangVecResponse<ThreadResponse> {
+async fn get_all_threads(
+    _: HttpRequest,
+    q: web::Query<ThreadQuery>,
+) -> EingangVecResponse<ThreadResponse> {
     let result = gat().unwrap();
     let query = q.into_inner();
     let r = if query.filter.is_some() {
-       match query.filter.unwrap() {
-        ThreadFilter::Tasks => result.into_iter().map(|f| ThreadResponse::Tasks(f.tasks)).collect(),
-        ThreadFilter::Notes => result.into_iter().map(|f| ThreadResponse::Notes(f.notes)).collect(),
-       }
+        match query.filter.unwrap() {
+            ThreadFilter::Tasks => result
+                .into_iter()
+                .map(|f| ThreadResponse::Tasks(f.tasks))
+                .collect(),
+            ThreadFilter::Notes => result
+                .into_iter()
+                .map(|f| ThreadResponse::Notes(f.notes))
+                .collect(),
+        }
     } else {
-        result.into_iter().map(|f| ThreadResponse::Threads(f)).collect()
+        result
+            .into_iter()
+            .map(|f| ThreadResponse::Threads(f))
+            .collect()
     };
     Ok(web::Json(r))
 }
@@ -54,13 +66,15 @@ async fn get_all_threads(_: HttpRequest, q: web::Query<ThreadQuery>) -> EingangV
 async fn create_new_thread(q: web::Json<ThreadQuery>) -> HttpResponse {
     // TODO breaks when UUID is not valid, should return BadRequest
     let tq = q.into_inner();
-    let tasks: Vec<TaskUuid> = tq.tasks
+    let tasks: Vec<TaskUuid> = tq
+        .tasks
         .unwrap_or_default()
         .iter()
         .filter_map(|uuid| read_task(&uuid).ok())
         .map(|uuid| uuid.get_uuid())
         .collect();
-    let notes: Vec<NoteUuid> = tq.notes
+    let notes: Vec<NoteUuid> = tq
+        .notes
         .unwrap_or_default()
         .iter()
         .filter_map(|uuid| read_note(&uuid).ok())
@@ -71,15 +85,18 @@ async fn create_new_thread(q: web::Json<ThreadQuery>) -> HttpResponse {
     HttpResponse::Ok().json(thread)
 }
 
-async fn get_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> EingangResponse<ThreadResponse> {
+async fn get_thread(
+    req: HttpRequest,
+    q: web::Query<ThreadQuery>,
+) -> EingangResponse<ThreadResponse> {
     let uuid: String = parse_uuid(req);
     let thread = read_thread(&uuid).unwrap();
     let query = q.into_inner();
     let r = if query.filter.is_some() {
-       match query.filter.unwrap() {
-        ThreadFilter::Tasks => ThreadResponse::Tasks(thread.tasks),
-        ThreadFilter::Notes => ThreadResponse::Notes(thread.notes),
-       }
+        match query.filter.unwrap() {
+            ThreadFilter::Tasks => ThreadResponse::Tasks(thread.tasks),
+            ThreadFilter::Notes => ThreadResponse::Notes(thread.notes),
+        }
     } else {
         ThreadResponse::Threads(thread)
     };
@@ -91,7 +108,7 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
     let query = q.into_inner();
 
     if query.task.is_some() && query.note.is_some() {
-        return HttpResponse::BadRequest().json("Either remove task or note from Thread")
+        return HttpResponse::BadRequest().json("Either remove task or note from Thread");
     }
 
     // TODO Move deletion in `eingang-base`
@@ -105,8 +122,8 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
                 thread.update_modified_date();
                 save_thread(&thread);
                 HttpResponse::NoContent().json("Successful")
-            },
-            None => HttpResponse::BadRequest().json("Task UUID is not associated")
+            }
+            None => HttpResponse::BadRequest().json("Task UUID is not associated"),
         }
     } else if query.note.is_some() {
         let mut thread = read_thread(&uuid).unwrap();
@@ -118,8 +135,8 @@ async fn delete_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
                 thread.update_modified_date();
                 save_thread(&thread);
                 HttpResponse::NoContent().json("Successful")
-            },
-            None => HttpResponse::BadRequest().json("Note UUID is not associated")
+            }
+            None => HttpResponse::BadRequest().json("Note UUID is not associated"),
         }
     } else {
         let file = Location::Thread.create_filename(&uuid);
@@ -136,7 +153,7 @@ async fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
     let query = q.into_inner();
 
     if query.task.is_some() && query.note.is_some() {
-        return HttpResponse::BadRequest().json("Either remove task or note")
+        return HttpResponse::BadRequest().json("Either remove task or note");
     }
 
     if query.task.is_some() {

@@ -9,13 +9,11 @@ pub trait Idable {
 
 pub type Timestamp = chrono::DateTime<chrono::Utc>;
 
+pub mod journal;
+pub mod meta;
 pub mod note;
 pub mod task;
 pub mod thread;
-pub mod meta;
-pub mod journal;
-
-
 
 // TODO Figure out ordering of methods
 // Notes should be compared by content

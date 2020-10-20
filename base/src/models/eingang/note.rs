@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::{meta::Meta, Idable};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct NoteQuery {
@@ -44,7 +44,7 @@ impl Idable for Note {
 
 #[cfg(test)]
 mod tests {
-    use super::{Note, Idable};
+    use super::{Idable, Note};
     use crate::models::eingang::{task::Task, task::TaskStatus, thread::Thread};
 
     #[test]

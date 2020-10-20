@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::{meta::Meta, Idable};
+use serde::{Deserialize, Serialize};
 
 pub type NoteUuid = uuid::Uuid;
 pub type TaskUuid = uuid::Uuid;
@@ -54,7 +54,6 @@ impl Idable for Thread {
     }
 }
 
-
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct ThreadQuery {
     pub task: Option<String>,
@@ -76,9 +75,8 @@ pub enum ThreadFilter {
 pub enum ThreadResponse {
     Threads(Thread),
     Tasks(Vec<TaskUuid>),
-    Notes(Vec<NoteUuid>)
+    Notes(Vec<NoteUuid>),
 }
-
 
 use super::Timestamp;
 
