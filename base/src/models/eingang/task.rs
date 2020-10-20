@@ -1,6 +1,6 @@
-use serde::{Deserialize, Serialize};
-use super::{meta::Meta, Idable};
 use super::note::Note;
+use super::{meta::Meta, Idable};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct TaskQuery {
@@ -61,7 +61,6 @@ impl Idable for Task {
     }
 }
 
-
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum TaskStatus {
@@ -84,7 +83,7 @@ impl TaskStatus {
             "deactivated" | "expired" => Some(TaskStatus::Deactivated),
             "open" => Some(TaskStatus::Open),
             "waiting" | "delegated" | "scheduled" => Some(TaskStatus::Waiting),
-            _ => None
+            _ => None,
         }
     }
 }

@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use super::Timestamp;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct Meta {
@@ -19,12 +19,10 @@ impl Default for Meta {
 }
 
 impl Meta {
-
     pub fn update_modified_date(&mut self) {
         self.last_modified = chrono::Utc::now()
     }
 }
-
 
 impl PartialOrd<Timestamp> for Meta {
     fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
