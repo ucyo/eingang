@@ -2,8 +2,7 @@
 use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::{middleware, App, HttpServer};
-use eingang_backend::routes::views::journal;
-use eingang_backend::routes::{config, notes, tasks, threads};
+use eingang_backend::routes::{config, journal, notes, tasks, threads};
 use eingang_backend::{FRONTEND_HOST, FRONTEND_PORT, HOST, PORT};
 
 #[actix_web::main]
