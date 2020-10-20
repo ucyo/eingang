@@ -118,3 +118,70 @@ pub fn get_all_threads() -> Result<Vec<Thread>, std::io::Error> {
         .collect();
     Ok(result)
 }
+
+pub fn filter_notes(notes: Vec<Note>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Note> {
+    if before.is_some() && after.is_some() {
+        let result: Vec<Note> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if before.is_some() {
+        let result: Vec<Note> = notes.into_iter()
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if after.is_some() {
+        let result: Vec<Note> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .collect();
+        return result
+    } else {
+        notes
+    }
+}
+
+
+pub fn filter_tasks(notes: Vec<Task>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Task> {
+    if before.is_some() && after.is_some() {
+        let result: Vec<Task> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if before.is_some() {
+        let result: Vec<Task> = notes.into_iter()
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if after.is_some() {
+        let result: Vec<Task> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .collect();
+        return result
+    } else {
+        notes
+    }
+}
+
+pub fn filter_threads(notes: Vec<Thread>, before: Option<Timestamp>, after: Option<Timestamp>) -> Vec<Thread> {
+    if before.is_some() && after.is_some() {
+        let result: Vec<Thread> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if before.is_some() {
+        let result: Vec<Thread> = notes.into_iter()
+            .filter(|f| *f < before.unwrap())
+            .collect();
+        return result
+    } else if after.is_some() {
+        let result: Vec<Thread> = notes.into_iter()
+            .filter(|f| *f > after.unwrap())
+            .collect();
+        return result
+    } else {
+        notes
+    }
+}
