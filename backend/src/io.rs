@@ -144,47 +144,47 @@ pub fn filter_notes(
 }
 
 pub fn filter_tasks(
-    notes: Vec<Task>,
+    tasks: Vec<Task>,
     before: Option<Timestamp>,
     after: Option<Timestamp>,
 ) -> Vec<Task> {
     if before.is_some() && after.is_some() {
-        let result: Vec<Task> = notes
+        let result: Vec<Task> = tasks
             .into_iter()
             .filter(|f| *f > after.unwrap())
             .filter(|f| *f < before.unwrap())
             .collect();
         return result;
     } else if before.is_some() {
-        let result: Vec<Task> = notes.into_iter().filter(|f| *f < before.unwrap()).collect();
+        let result: Vec<Task> = tasks.into_iter().filter(|f| *f < before.unwrap()).collect();
         return result;
     } else if after.is_some() {
-        let result: Vec<Task> = notes.into_iter().filter(|f| *f > after.unwrap()).collect();
+        let result: Vec<Task> = tasks.into_iter().filter(|f| *f > after.unwrap()).collect();
         return result;
     } else {
-        notes
+        tasks
     }
 }
 
 pub fn filter_threads(
-    notes: Vec<Thread>,
+    threads: Vec<Thread>,
     before: Option<Timestamp>,
     after: Option<Timestamp>,
 ) -> Vec<Thread> {
     if before.is_some() && after.is_some() {
-        let result: Vec<Thread> = notes
+        let result: Vec<Thread> = threads
             .into_iter()
             .filter(|f| *f > after.unwrap())
             .filter(|f| *f < before.unwrap())
             .collect();
         return result;
     } else if before.is_some() {
-        let result: Vec<Thread> = notes.into_iter().filter(|f| *f < before.unwrap()).collect();
+        let result: Vec<Thread> = threads.into_iter().filter(|f| *f < before.unwrap()).collect();
         return result;
     } else if after.is_some() {
-        let result: Vec<Thread> = notes.into_iter().filter(|f| *f > after.unwrap()).collect();
+        let result: Vec<Thread> = threads.into_iter().filter(|f| *f > after.unwrap()).collect();
         return result;
     } else {
-        notes
+        threads
     }
 }
