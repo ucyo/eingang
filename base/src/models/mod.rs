@@ -1,5 +1,5 @@
 mod data;
-mod eingang;
+pub mod eingang;
 
 pub use self::eingang::note::{Note, NoteQuery};
 pub use self::eingang::task::{Task, TaskQuery, TaskStatus};

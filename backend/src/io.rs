@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use eingang::models::eingang::Timestamp;
 
 /// Information about the location of each content type
 pub enum Location {
