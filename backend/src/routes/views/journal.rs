@@ -48,15 +48,4 @@ async fn journal(_: HttpRequest, d: web::Json<JournalQuery>) -> EingangVecRespon
             return Err(HttpResponse::BadRequest().json("Thread filtering not yet implemented"))
         },
     }
-    // if data.during.is_some() {
-    //     let reference = &data.during.unwrap();
-    //     let ts = reference.to_timestamp();
-    //     println!("During {:#?}", ts);
-    // }
-    // // testing
-    // if data.before.is_some() {
-    //     let reference = &data.before_to_timestamp().unwrap();
-    //     println!("Untouched {:#?}", reference);
-    // }
-    // println!("{:#?}", data.filter.unwrap_or_default());
 }
