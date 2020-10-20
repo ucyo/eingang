@@ -14,7 +14,7 @@ pub struct JournalQuery {
     pub filter: Option<JournalFilter>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum JournalFilter {
     Threads,
@@ -63,6 +63,8 @@ pub struct Period {
     week: Option<u32>,
     day: Option<u32>,
     hour: Option<u32>,
+    minute: Option<u32>,
+    second: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -80,10 +82,13 @@ impl Period {
             + chrono::Duration::weeks(self.week.unwrap_or_default() as i64)
             + chrono::Duration::days(self.day.unwrap_or_default() as i64)
             + chrono::Duration::hours(self.hour.unwrap_or_default() as i64)
+            + chrono::Duration::minutes(self.minute.unwrap_or_default() as i64)
+            + chrono::Duration::seconds(self.second.unwrap_or_default() as i64)
     }
 
     pub fn to_timestamp(&self) -> Timestamp {
         let delta = self.to_timedelta();
+        println!("{:#?}", delta);
         chrono::Utc::now().checked_sub_signed(delta).unwrap()
     }
 }
