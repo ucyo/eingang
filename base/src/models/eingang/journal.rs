@@ -88,7 +88,6 @@ impl Period {
 
     pub fn to_timestamp(&self) -> Timestamp {
         let delta = self.to_timedelta();
-        println!("{:#?}", delta);
         chrono::Utc::now().checked_sub_signed(delta).unwrap()
     }
 }

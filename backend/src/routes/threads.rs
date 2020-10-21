@@ -159,7 +159,6 @@ async fn extend_thread(req: HttpRequest, q: web::Query<ThreadQuery>) -> HttpResp
     if query.task.is_some() {
         let task = read_task(&query.task.unwrap()).unwrap();
         thread.add_task(task.get_uuid());
-        println!("{:#?}", thread);
         save_thread(&thread);
         return HttpResponse::NoContent().json("Task added");
     } else if query.note.is_some() {
