@@ -1,10 +1,9 @@
-use super::{meta::Meta, Idable};
+use super::{meta::Meta, Idable, Timestamp};
 use serde::{Deserialize, Serialize};
 
 pub type NoteUuid = uuid::Uuid;
 pub type TaskUuid = uuid::Uuid;
 
-// TODO Make Thread to actually only save UUID, and not(!) the note or thread
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Thread {
     pub notes: Vec<NoteUuid>,
@@ -78,7 +77,6 @@ pub enum ThreadResponse {
     Notes(Vec<NoteUuid>),
 }
 
-use super::Timestamp;
 
 impl PartialOrd<Timestamp> for Thread {
     fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
