@@ -41,27 +41,37 @@ async fn journal(
         return Err(HttpResponse::BadRequest().json("Either time period OR moment"));
     }
     let filter = data.filter.unwrap_or_default();
+    let result = filtering(filter, &data);
+    Ok(web::Json(result))
 
+}
+
+
+fn filtering(filter: JournalFilter, data: &JournalQuery) -> Vec<JournalResponse> {
     match filter {
         JournalFilter::All => {
-            return Err(HttpResponse::BadRequest().json("All filtering not yet implemented"))
+            let mut notes = filtering(JournalFilter::Notes, data);
+            let mut tasks = filtering(JournalFilter::Tasks, data);
+            let mut threads = filtering(JournalFilter::Threads, data);
+            notes.append(&mut tasks);
+            notes.append(&mut threads);
+            notes
         }
         JournalFilter::Notes => {
             let notes = get_all_notes().unwrap();
             if data.during.is_some() {
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_notes(notes, None, Some(tstamp));
-                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
-                return Ok(web::Json(result))
+                filtered.into_iter().map(|n| JournalResponse::Note(n)).collect()
         } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_notes(notes, Some(tstamp), None);
                 let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
-                return Ok(web::Json(result))
+                result
         } else {
                 let filtered = filter_notes(notes, data.before_to_timestamp(), data.after_to_timestamp());
                 let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
-                return Ok(web::Json(result))
+                result
             }
         }
         JournalFilter::Tasks => {
@@ -70,16 +80,16 @@ async fn journal(
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_tasks(tasks, None, Some(tstamp));
                 let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
-                return Ok(web::Json(result))
+                result
         } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_tasks(tasks, Some(tstamp), None);
                 let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
-                return Ok(web::Json(result))
+                result
         } else {
                 let filtered = filter_tasks(tasks, data.before_to_timestamp(), data.after_to_timestamp());
                 let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
-                return Ok(web::Json(result))
+                result
             }
         }
         JournalFilter::Threads => {
@@ -88,16 +98,16 @@ async fn journal(
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_threads(threads, None, Some(tstamp));
                 let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
-                return Ok(web::Json(result))
+                result
         } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_threads(threads, Some(tstamp), None);
                 let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
-                return Ok(web::Json(result))
+                result
         } else {
                 let filtered = filter_threads(threads, data.before_to_timestamp(), data.after_to_timestamp());
                 let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
-                return Ok(web::Json(result))
+                result
             }
         }
     }
