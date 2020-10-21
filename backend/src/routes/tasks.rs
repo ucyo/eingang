@@ -66,8 +66,10 @@ async fn create_new_task(q: web::Json<TaskQuery>) -> HttpResponse {
 
 async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
     let uuid: String = parse_uuid(req);
-    let task = read_task(&uuid).unwrap();
-    Ok(web::Json(task))
+    match read_task(&uuid) {
+        Ok(note) => Ok(web::Json(note)),
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+    }
 }
 
 async fn delete_task(req: HttpRequest) -> HttpResponse {

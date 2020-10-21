@@ -26,8 +26,10 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 ///
 /// This route returns all notes saved on the filesystem.
 async fn get_all_notes(_: HttpRequest) -> EingangVecResponse<Note> {
-    let result = gan().unwrap();
-    Ok(web::Json(result))
+    match gan() {
+        Ok(result) => Ok(web::Json(result)),
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+    }
 }
 
 async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
@@ -44,8 +46,10 @@ async fn create_new_note(q: web::Json<NoteQuery>) -> HttpResponse {
 
 async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
-    let note = read_note(&uuid).unwrap();
-    Ok(web::Json(note))
+    match read_note(&uuid) {
+        Ok(note) => Ok(web::Json(note)),
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+    }
 }
 
 async fn delete_note(req: HttpRequest) -> HttpResponse {

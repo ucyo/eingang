@@ -70,10 +70,10 @@ pub mod threads;
 pub mod journal;
 
 /// Return a vector of json serializeable data
-pub type EingangVecResponse<T> = Result<web::Json<Vec<T>>>;
+pub type EingangVecResponse<T> = Result<web::Json<Vec<T>>, web::HttpResponse>;
 
 /// Return a json representation of serializable data
-pub type EingangResponse<T> = Result<web::Json<T>>;
+pub type EingangResponse<T> = Result<web::Json<T>, web::HttpResponse>;
 
 fn parse_uuid(req: HttpRequest) -> String {
     req.match_info()

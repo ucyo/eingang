@@ -17,9 +17,7 @@ use eingang::models::{JournalFilter, JournalQuery, JournalResponse};
 use crate::io::{get_all_notes, filter_notes};
 use crate::io::{get_all_tasks, filter_tasks};
 use crate::io::{get_all_threads, filter_threads};
-
-/// Return a vector of json serializeable data
-pub type EingangVecResponseError<T> = Result<web::Json<Vec<T>>, HttpResponse>; // TODO Apply this setup also to the others
+use super::EingangVecResponse;
 
 /// Configure routes for Journal view
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -30,7 +28,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 async fn journal(
     _: HttpRequest,
     d: web::Json<JournalQuery>,
-) -> EingangVecResponseError<JournalResponse> {
+) -> EingangVecResponse<JournalResponse> {
     let data = d.into_inner();
     if data.during.is_some() && data.untouched.is_some() {
         return Err(HttpResponse::BadRequest().json("Either during OR untouched"));
