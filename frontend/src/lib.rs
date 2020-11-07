@@ -24,7 +24,7 @@ struct Model {
 enum Msg {
     AddOne,
     SubtractOne,
-    SetValue,
+    // SetValue,
     FetchStart,
     FetchSuccess(Data),
     FetchFail,
@@ -125,30 +125,6 @@ impl Component for Model {
                 self.value -= 1;
                 ConsoleService::log("Decrement")
             }
-            Msg::SetValue => {
-                let current = self.value.to_string();
-                let input = DialogService::prompt("Set value to?", Some(current.as_str()))
-                    .unwrap()
-                    .parse::<i64>();
-                match input {
-                    Ok(value) => {
-                        if value == self.value {
-                            return false;
-                        }
-                        let msg = format!("Do you want to change the value to {}?", value);
-                        let confirmed = DialogService::confirm(msg.as_str());
-                        if confirmed {
-                            let msg = format!("Changed {} to {}.", self.value, value);
-                            self.value.update(value);
-                            DialogService::alert(msg.as_str());
-                            ConsoleService::log(msg.as_str())
-                        } else {
-                            DialogService::alert("Did not change value.")
-                        }
-                    }
-                    Err(_) => ConsoleService::log("Can not parse number"),
-                }
-            }
         }
         self.storage.store(KEY, Json(&self.value));
         true
@@ -167,7 +143,6 @@ impl Component for Model {
                 <h1>{ self.value }</h1>
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
                 <button onclick=self.link.callback(|_| Msg::SubtractOne)>{ "-1" }</button>
-                <button onclick=self.link.callback(|_| Msg::SetValue)>{ "Set value" }</button>
                 <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
                 <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
             </div>
