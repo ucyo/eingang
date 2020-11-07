@@ -1,6 +1,6 @@
 #![recursion_limit = "256"]
 use anyhow::Error;
-use eingang::models::Data;
+use eingang::models::Note;
 use wasm_bindgen::prelude::*;
 use yew::format::{Json, Nothing};
 use yew::services::fetch::{FetchTask, Request, Response};
@@ -16,14 +16,14 @@ type SendResponse = Response<Result<String, Error>>;
 struct Model {
     link: ComponentLink<Self>,
     storage: StorageService,
-    value: Data,
+    value: Note,
     ft: Option<FetchTask>, // currently active FetchTask is saved here
     st: Option<FetchTask>,
 }
 
 enum Msg {
     FetchStart,
-    FetchSuccess(Data),
+    FetchSuccess(Note),
     FetchFail,
     SendStart,
     SendSuccess,
@@ -86,7 +86,7 @@ impl Component for Model {
             }
             Msg::FetchStart => {
                 // set up what to do if the FetchResponse finishes
-                let callback = self.link.callback(move |response: FetchResponse<Data>| {
+                let callback = self.link.callback(move |response: FetchResponse<Note>| {
                     let (meta, Json(result)) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::FetchSuccess(result.ok().unwrap())
@@ -129,8 +129,7 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <div>
-                <h1>{ self.value }</h1>
-                // <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
+                <h1>{ &self.value }</h1>
                 <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
                 <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
             </div>
