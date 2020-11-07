@@ -2,7 +2,7 @@
 use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::{middleware, App, HttpServer};
-use eingang_backend::routes::{config, journal, notes, tasks, threads};
+use eingang_backend::routes::{journal, notes, tasks, threads};
 use eingang_backend::{FRONTEND_HOST, FRONTEND_PORT, HOST, PORT};
 
 #[actix_web::main]
@@ -25,7 +25,6 @@ async fn main() -> std::io::Result<()> {
             )
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .configure(config)
             .configure(notes::config)
             .configure(journal::config)
             .configure(tasks::config)
