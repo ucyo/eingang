@@ -1,6 +1,7 @@
 #![recursion_limit = "256"]
 use anyhow::Error;
 use eingang::models::Note;
+use eingang::models::Idable;
 use wasm_bindgen::prelude::*;
 use yew::format::{Json, Nothing};
 use yew::services::fetch::{FetchTask, Request, Response};
@@ -16,18 +17,19 @@ type SendResponse = Response<Result<String, Error>>;
 struct Model {
     link: ComponentLink<Self>,
     storage: StorageService,
-    value: Note,
+    value: Vec<Note>,
     ft: Option<FetchTask>, // currently active FetchTask is saved here
     st: Option<FetchTask>,
 }
 
 enum Msg {
     FetchStart,
-    FetchSuccess(Note),
+    FetchSuccess(Vec<Note>),
     FetchFail,
     SendStart,
     SendSuccess,
     SendFailed,
+    CreateNote,
 }
 
 impl Component for Model {
@@ -59,6 +61,10 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::CreateNote => {
+                let message = format!("Creating a new Note");
+                ConsoleService::info(message.as_str())
+            }
             Msg::SendStart => {
                 let callback = self.link.callback(move |response: SendResponse| {
                     let (meta, _) = response.into_parts();
@@ -86,7 +92,7 @@ impl Component for Model {
             }
             Msg::FetchStart => {
                 // set up what to do if the FetchResponse finishes
-                let callback = self.link.callback(move |response: FetchResponse<Note>| {
+                let callback = self.link.callback(move |response: FetchResponse<Vec<Note>>| {
                     let (meta, Json(result)) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::FetchSuccess(result.ok().unwrap())
@@ -127,11 +133,25 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
+        let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
+                 html! {
+                  <div>
+                    <p>{&note}</p>
+                    <p>{&note.get_uuid()}</p>
+                    <form action="https://google.com">  // TODO This must be build up from configuration
+                        <button type="submit" value="Edit" />
+                    </form>
+                    <form action="https://google.com">  // TODO This must be build up from configuration
+                        <button type="submit" value="Delete" />
+                    </form>
+                  </div>
+                }
+            })
+            .collect();
         html! {
             <div>
-                <h1>{ &self.value }</h1>
-                <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
-                <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
+                <button onclick=self.link.callback(|_| Msg::CreateNote) type="submit">{ "Create Note" }</button>
+                <span>{notes}</span>
             </div>
         }
     }
