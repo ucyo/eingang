@@ -23,7 +23,7 @@ struct Model {
 
 enum Msg {
     AddOne,
-    SubtractOne,
+    // SubtractOne,
     // SetValue,
     FetchStart,
     FetchSuccess(Data),
@@ -121,10 +121,6 @@ impl Component for Model {
                 self.value += 1;
                 ConsoleService::log("Increment")
             }
-            Msg::SubtractOne => {
-                self.value -= 1;
-                ConsoleService::log("Decrement")
-            }
         }
         self.storage.store(KEY, Json(&self.value));
         true
@@ -142,7 +138,6 @@ impl Component for Model {
             <div>
                 <h1>{ self.value }</h1>
                 <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
-                <button onclick=self.link.callback(|_| Msg::SubtractOne)>{ "-1" }</button>
                 <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
                 <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
             </div>
