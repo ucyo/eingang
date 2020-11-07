@@ -22,9 +22,6 @@ struct Model {
 }
 
 enum Msg {
-    AddOne,
-    // SubtractOne,
-    // SetValue,
     FetchStart,
     FetchSuccess(Data),
     FetchFail,
@@ -117,10 +114,6 @@ impl Component for Model {
                 ConsoleService::log("Fetching of data failed!!!");
                 self.ft = None
             }
-            Msg::AddOne => {
-                self.value += 1;
-                ConsoleService::log("Increment")
-            }
         }
         self.storage.store(KEY, Json(&self.value));
         true
@@ -137,7 +130,7 @@ impl Component for Model {
         html! {
             <div>
                 <h1>{ self.value }</h1>
-                <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
+                // <button onclick=self.link.callback(|_| Msg::AddOne)>{ "+1" }</button>
                 <button onclick=self.link.callback(|_| Msg::FetchStart)>{ "Load" }</button>
                 <button onclick=self.link.callback(|_| Msg::SendStart)>{ "Save" }</button>
             </div>
