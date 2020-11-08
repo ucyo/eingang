@@ -9,6 +9,8 @@ use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
+use eingang::config::backend::{HOST as BACKEND_HOST, PORT as BACKEND_PORT};
+
 use eingang::config::frontend::KEY;
 
 type FetchResponse<T> = Response<Json<Result<T, Error>>>;
@@ -102,7 +104,8 @@ impl Component for Model {
                 });
 
                 // actual request body
-                let request = Request::get("http://localhost:8081/load")
+                let uri = format!("http://{}:{}/notes", BACKEND_HOST, BACKEND_PORT);
+                let request = Request::get(uri)
                     .body(Nothing)
                     .unwrap();
 
@@ -113,6 +116,7 @@ impl Component for Model {
                 self.ft = Some(task)
             }
             Msg::FetchSuccess(data) => {
+                ConsoleService::log("Fetching of data successful!!!");
                 self.value = data;
                 self.ft = None
             }
@@ -139,10 +143,13 @@ impl Component for Model {
                     <p>{&note}</p>
                     <p>{&note.get_uuid()}</p>
                     <form action="https://google.com">  // TODO This must be build up from configuration
-                        <button type="submit" value="Edit" />
+                        <button type="submit" value="Edit">{"Edit"}</button>
                     </form>
                     <form action="https://google.com">  // TODO This must be build up from configuration
-                        <button type="submit" value="Delete" />
+                        <button type="submit" value="Delete">{"Delete"}</button>
+                    </form>
+                    <form action="https://google.com">  // TODO This must be build up from configuration
+                        <button type="submit" value="View">{"View"}</button>
                     </form>
                   </div>
                 }
@@ -150,6 +157,7 @@ impl Component for Model {
             .collect();
         html! {
             <div>
+                <button onclick=self.link.callback(|_| Msg::FetchStart) type="submit">{ "Load Notes" }</button>
                 <button onclick=self.link.callback(|_| Msg::CreateNote) type="submit">{ "Create Note" }</button>
                 <span>{notes}</span>
             </div>
