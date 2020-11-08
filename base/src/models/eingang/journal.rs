@@ -2,8 +2,8 @@ use super::Timestamp;
 use super::{note::Note, task::Task, thread::Thread};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+use crate::config::models::TIME;
 
-const TIME: &str = "%Y-%m-%d";
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct JournalQuery {
