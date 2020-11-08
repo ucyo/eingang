@@ -70,10 +70,24 @@ impl Component for Model {
                     ConsoleService::info(message.as_str());
                     return false
                 }
+                let  callback = self.link.callback(move | response: Response<Result<String, Error>>|{
+                    let (meta, _) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::DeleteNoteSuccessful(id)
+                    } else {
+                        Msg::DeleteNoteFailed(id)
+                    }
+                });
+                let uri = format!("http://{}:{}/notes/{}/delete", BACKEND_HOST, BACKEND_PORT, note_id);
+                let request = Request::delete(uri).body(Nothing).unwrap();
+                let task = yew::services::FetchService::fetch(request, callback).unwrap();
+                self.ft = Some(task)
             }
             Msg::DeleteNoteSuccessful(id) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
                 let message = format!("Note {} deleted", note_id);
+                // TODO Since Calls operate on IO level, the self object needs to be updated separately
+                self.value.retain(|s| s.get_uuid() != note_id);
                 ConsoleService::info(message.as_str());
                 self.ft = None;
             }
@@ -142,7 +156,7 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
-    let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
+            let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
             let id = note.get_uuid().to_u128_le();
                  html! {
                   <div>
