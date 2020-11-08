@@ -26,6 +26,8 @@ enum Msg {
     FetchNotesSuccessful(Vec<Note>),
     FetchNotesFailed,
     DeleteNote(u128),
+    DeleteNoteSuccessful(u128),
+    DeleteNoteFailed(u128),
     EditNote(u128),
     ViewNote(u128),
     CreateNote,
@@ -70,6 +72,18 @@ impl Component for Model {
                     let message = format!("Aborting deletion of {}", note_id);
                     ConsoleService::info(message.as_str())
                 }
+            }
+            Msg::DeleteNoteSuccessful(id) => {
+                let note_id = uuid::Uuid::from_u128_le(id);
+                let message = format!("Note {} deleted", note_id);
+                ConsoleService::info(message.as_str());
+                self.ft = None;
+            }
+            Msg::DeleteNoteFailed(id) => {
+                let note_id = uuid::Uuid::from_u128_le(id);
+                let message = format!("Deleting Note {} failed", note_id);
+                ConsoleService::info(message.as_str());
+                self.ft = None;
             }
             Msg::EditNote(id) => {
                 let obj = uuid::Uuid::from_u128_le(id);
