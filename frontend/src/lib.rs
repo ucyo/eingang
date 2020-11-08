@@ -9,7 +9,7 @@ use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
-const KEY: &str = "eingang.model.store";
+use eingang::config::frontend::KEY;
 
 type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 type SendResponse = Response<Result<String, Error>>;

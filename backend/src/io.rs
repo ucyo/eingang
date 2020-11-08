@@ -1,4 +1,4 @@
-use crate::{BASE_FOLDER, NOTE_FOLDER, TASK_FOLDER, THREAD_FOLDER};
+use eingang::config::backend::{BASE_FOLDER, NOTE_FOLDER, TASK_FOLDER, THREAD_FOLDER};
 use eingang::models::eingang::Timestamp;
 use eingang::models::{Idable, Note, Task, Thread};
 use std::fs::File;
