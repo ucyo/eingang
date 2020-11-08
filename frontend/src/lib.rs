@@ -28,6 +28,9 @@ enum Msg {
     FetchStart,
     FetchSuccess(Vec<Note>),
     FetchFail,
+    StartDelete(u128),
+    StartEdit(u128),
+    StartView(u128),
     SendStart,
     SendSuccess,
     SendFailed,
@@ -63,6 +66,21 @@ impl Component for Model {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::StartDelete(id) => {
+                let obj = uuid::Uuid::from_u128_le(id);
+                let message = format!("Delete: {}", obj);
+                ConsoleService::info(message.as_str())
+            }
+            Msg::StartEdit(id) => {
+                let obj = uuid::Uuid::from_u128_le(id);
+                let message = format!("Edit: {}", obj);
+                ConsoleService::info(message.as_str())
+            }
+            Msg::StartView(id) => {
+                let obj = uuid::Uuid::from_u128_le(id);
+                let message = format!("View: {}", obj);
+                ConsoleService::info(message.as_str())
+            }
             Msg::CreateNote => {
                 let message = format!("Creating a new Note");
                 ConsoleService::info(message.as_str())
@@ -137,21 +155,16 @@ impl Component for Model {
     }
 
     fn view(&self) -> Html {
-        let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
+    let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
+            let id = note.get_uuid().to_u128_le();
                  html! {
                   <div>
+                    <p>{&note.get_uuid()}{":"}</p>
                     <p>{&note}</p>
-                    <p>{&note.get_uuid()}</p>
-                    <form action="https://google.com">  // TODO This must be build up from configuration
-                        <button type="submit" value="Edit">{"Edit"}</button>
-                    </form>
-                    <form action="https://google.com">  // TODO This must be build up from configuration
-                        <button type="submit" value="Delete">{"Delete"}</button>
-                    </form>
-                    <form action="https://google.com">  // TODO This must be build up from configuration
-                        <button type="submit" value="View">{"View"}</button>
-                    </form>
-                  </div>
+                    <button onclick=self.link.callback(move |_| Msg::StartView(id)) type="submit">{ "View" }</button>
+                    <button onclick=self.link.callback(move |_| Msg::StartEdit(id)) type="submit">{ "Edit" }</button>
+                    <button onclick=self.link.callback(move |_| Msg::StartDelete(id)) type="submit">{ "Delete" }</button>
+                </div>
                 }
             })
             .collect();
