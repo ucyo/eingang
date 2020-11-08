@@ -51,6 +51,7 @@ impl Component for Model {
                 Default::default()
             }
         };
+        link.send_message(Msg::FetchNotes);
         Self {
             link,
             storage,
@@ -86,10 +87,10 @@ impl Component for Model {
             Msg::DeleteNoteSuccessful(id) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
                 let message = format!("Note {} deleted", note_id);
-                // TODO Since Calls operate on IO level, the self object needs to be updated separately
-                self.value.retain(|s| s.get_uuid() != note_id);
-                ConsoleService::info(message.as_str());
                 self.ft = None;
+                ConsoleService::info(message.as_str());
+                // TODO Since Calls operate on IO level, the self object needs to be updated from disk
+                self.link.send_message(Msg::FetchNotes);
             }
             Msg::DeleteNoteFailed(id) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
