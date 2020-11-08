@@ -65,12 +65,10 @@ impl Component for Model {
                 let note_id = uuid::Uuid::from_u128_le(id);
                 let msg = format!("Do you really wanna delete: {}", note_id);
                 let confirmed = DialogService::confirm(msg.as_str());
-                if confirmed {
-                    let message = format!("Deleting: {}", note_id);
-                    ConsoleService::info(message.as_str());
-                } else {
+                if !confirmed {
                     let message = format!("Aborting deletion of {}", note_id);
-                    ConsoleService::info(message.as_str())
+                    ConsoleService::info(message.as_str());
+                    return false
                 }
             }
             Msg::DeleteNoteSuccessful(id) => {
