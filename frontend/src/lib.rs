@@ -67,9 +67,16 @@ impl Component for Model {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::StartDelete(id) => {
-                let obj = uuid::Uuid::from_u128_le(id);
-                let message = format!("Delete: {}", obj);
-                ConsoleService::info(message.as_str())
+                let note_id = uuid::Uuid::from_u128_le(id);
+                let msg = format!("Do you really wanna delete: {}", note_id);
+                let confirmed = DialogService::confirm(msg.as_str());
+                if confirmed {
+                    let message = format!("Deleting: {}", note_id);
+                    ConsoleService::info(message.as_str());
+                } else {
+                    let message = format!("Aborting deletion of {}", note_id);
+                    ConsoleService::info(message.as_str())
+                }
             }
             Msg::StartEdit(id) => {
                 let obj = uuid::Uuid::from_u128_le(id);
