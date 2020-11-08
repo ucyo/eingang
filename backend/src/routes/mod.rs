@@ -2,10 +2,7 @@
 //!
 //! **Ideally all routes are just one/two liner and simple function calls to the backend**
 //!
-use crate::STORAGE;
-use actix_web::{web, HttpRequest, HttpResponse, Responder, Result};
-use serde_qs as qs;
-use std::{fs::File, io::Write};
+use actix_web::{web, HttpRequest, Result};
 pub mod notes;
 pub mod tasks;
 pub mod threads;
