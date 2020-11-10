@@ -26,7 +26,7 @@ pub struct Home {
 pub enum Msg {
     GetNotes,
     GetNotesSuccessful(Vec<Note>),
-    GetNotesFailed,
+    GetNotesFailed(Error),
     DeleteNote(u128),
     DeleteNoteSuccessful(u128),
     DeleteNoteFailed(u128),
@@ -123,20 +123,25 @@ impl Component for Home {
                     if meta.status.is_success() {
                         Msg::GetNotesSuccessful(result.ok().unwrap())
                     } else {
-                        Msg::GetNotesFailed
+                        Msg::GetNotesFailed(result.err().unwrap())
                     }
                 });
                 let task = crate::api::get_all_notes(callback);
-                self.ft = Some(task)
+                self.ft = Some(task);
+                self.state.get_notes_loaded = false;
+                self.state.get_notes_error = None;
             }
             Msg::GetNotesSuccessful(data) => {
                 ConsoleService::log("Fetching of data successful!!!");
                 self.state.notes = data;
-                self.ft = None
+                self.ft = None;
+                self.state.get_notes_loaded = true;
+                self.state.get_notes_error = None;
             }
-            Msg::GetNotesFailed => {
+            Msg::GetNotesFailed(err) => {
                 ConsoleService::log("Fetching of data failed!!!");
-                self.ft = None
+                self.state.get_notes_error = Some(err);
+                self.ft = None;
             }
         }
         self.storage.store(KEY, Json(&self.state.notes));
@@ -151,19 +156,29 @@ impl Component for Home {
     }
 
     fn view(&self) -> Html {
+        if let Some(err) = &self.state.get_notes_error {
+            return html! {
+                <div> {format!("Error: {}", err)} </div>
+            }
+        } else if !self.state.get_notes_loaded {
+            return html! {
+                <div>{"Loading..."}</div>
+            }
+        }
         let notes: Vec<Html> = self.state.notes.iter().map(|note: &Note| {
-        let id = note.get_uuid().to_u128_le();
-                html! {
+            let id = note.get_uuid().to_u128_le();
+            html! {
                 <div>
-                <p>{&note.get_uuid()}{":"}</p>
-                <p>{&note}</p>
-                <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
-                <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
-                <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
-            </div>
+                    <p>{&note.get_uuid()}{":"}</p>
+                    <p>{&note}</p>
+                    <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
+                    <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
+                    <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
+                </div>
             }
         })
         .collect();
+
         html! {
             <div>
                 <button onclick=self.link.callback(|_| Msg::GetNotes) type="submit">{ "Load Notes" }</button>
