@@ -29,7 +29,7 @@ pub enum Msg {
     GetNotesFailed(Error),
     DeleteNote(u128),
     DeleteNoteSuccessful(u128),
-    DeleteNoteFailed(u128),
+    DeleteNoteFailed(u128, Error),
     CreateNote,
     ViewNote(u128),
     EditNote(u128),
@@ -79,11 +79,11 @@ impl Component for Home {
                     return false
                 }
                 let callback = self.link.callback(move | response: FetchStringResponse |{
-                    let (meta, _) = response.into_parts();
+                    let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::DeleteNoteSuccessful(id)
                     } else {
-                        Msg::DeleteNoteFailed(id)
+                        Msg::DeleteNoteFailed(id, result.err().unwrap())
                     }
                 });
                 let task = crate::api::delete_single_note(callback, note_id);
@@ -97,9 +97,9 @@ impl Component for Home {
                 self.ft = None;
                 self.link.send_message(Msg::GetNotes);
             }
-            Msg::DeleteNoteFailed(id) => {
+            Msg::DeleteNoteFailed(id, err) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
-                let message = format!("Deleting Note {} failed", note_id);
+                let message = format!("Deleting Note {} failed, because {}", note_id, err);
                 ConsoleService::info(message.as_str());
                 self.ft = None;
             }
