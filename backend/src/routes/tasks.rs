@@ -68,7 +68,7 @@ async fn get_task(req: HttpRequest) -> EingangResponse<Task> {
     let uuid: String = parse_uuid(req);
     match read_task(&uuid) {
         Ok(note) => Ok(web::Json(note)),
-        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e))),
     }
 }
 

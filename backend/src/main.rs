@@ -2,9 +2,9 @@
 use actix_cors::Cors;
 use actix_web::http::header;
 use actix_web::{middleware, App, HttpServer};
-use eingang_backend::routes::{journal, notes, tasks, threads};
 use eingang::config::backend::{HOST, PORT};
 use eingang::config::frontend::{HOST as FRONTEND_HOST, PORT as FRONTEND_PORT};
+use eingang_backend::routes::{journal, notes, tasks, threads};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

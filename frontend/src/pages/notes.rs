@@ -1,19 +1,19 @@
 use anyhow::Error;
-use eingang::models::Note;
 use eingang::models::Idable;
+use eingang::models::Note;
 use yew::format::Json;
 use yew::services::fetch::FetchTask;
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
-use eingang::config::frontend::KEY;
 use crate::api::{FetchJsonResponse, FetchStringResponse};
+use eingang::config::frontend::KEY;
 
 struct State {
     notes: Vec<Note>,
     get_notes_loaded: bool,
-    get_notes_error: Option<Error>
+    get_notes_error: Option<Error>,
 }
 
 pub struct Home {
@@ -76,9 +76,9 @@ impl Component for Home {
                 if !confirmed {
                     let message = format!("Aborting deletion of {}", note_id);
                     ConsoleService::info(message.as_str());
-                    return false
+                    return false;
                 }
-                let callback = self.link.callback(move | response: FetchStringResponse |{
+                let callback = self.link.callback(move |response: FetchStringResponse| {
                     let (meta, result) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::DeleteNoteSuccessful(id)
@@ -118,14 +118,16 @@ impl Component for Home {
                 ConsoleService::info(message.as_str())
             }
             Msg::GetNotes => {
-                let callback = self.link.callback(move |response: FetchJsonResponse<Vec<Note>>| {
-                    let (meta, Json(result)) = response.into_parts();
-                    if meta.status.is_success() {
-                        Msg::GetNotesSuccessful(result.ok().unwrap())
-                    } else {
-                        Msg::GetNotesFailed(result.err().unwrap())
-                    }
-                });
+                let callback = self
+                    .link
+                    .callback(move |response: FetchJsonResponse<Vec<Note>>| {
+                        let (meta, Json(result)) = response.into_parts();
+                        if meta.status.is_success() {
+                            Msg::GetNotesSuccessful(result.ok().unwrap())
+                        } else {
+                            Msg::GetNotesFailed(result.err().unwrap())
+                        }
+                    });
                 let task = crate::api::get_all_notes(callback);
                 self.ft = Some(task);
                 self.state.get_notes_loaded = false;
@@ -159,11 +161,11 @@ impl Component for Home {
         if let Some(err) = &self.state.get_notes_error {
             return html! {
                 <div> {format!("Error: {}", err)} </div>
-            }
+            };
         } else if !self.state.get_notes_loaded {
             return html! {
                 <div>{"Loading..."}</div>
-            }
+            };
         }
         let notes: Vec<Html> = self.state.notes.iter().map(|note: &Note| {
             let id = note.get_uuid().to_u128_le();

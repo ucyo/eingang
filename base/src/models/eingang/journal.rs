@@ -1,9 +1,8 @@
 use super::Timestamp;
 use super::{note::Note, task::Task, thread::Thread};
+use crate::config::models::TIME;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
-use crate::config::models::TIME;
-
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct JournalQuery {

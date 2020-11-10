@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
-mod pages;
 mod api;
+mod pages;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {

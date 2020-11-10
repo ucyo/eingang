@@ -28,7 +28,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
 async fn get_all_notes(_: HttpRequest) -> EingangVecResponse<Note> {
     match gan() {
         Ok(result) => Ok(web::Json(result)),
-        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e))),
     }
 }
 
@@ -48,7 +48,7 @@ async fn get_note(req: HttpRequest) -> EingangResponse<Note> {
     let uuid: String = parse_uuid(req);
     match read_note(&uuid) {
         Ok(note) => Ok(web::Json(note)),
-        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e)))
+        Err(e) => Err(HttpResponse::BadRequest().json(format!("{}", e))),
     }
 }
 
