@@ -77,7 +77,6 @@ pub enum ThreadResponse {
     Notes(Vec<NoteUuid>),
 }
 
-
 impl PartialOrd<Timestamp> for Thread {
     fn partial_cmp(&self, other: &Timestamp) -> Option<std::cmp::Ordering> {
         self.meta.partial_cmp(&other)
