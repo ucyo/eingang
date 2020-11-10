@@ -1,16 +1,14 @@
 use anyhow::Error;
 use eingang::models::Note;
 use eingang::models::Idable;
-use yew::format::{Json, Nothing};
-use yew::services::fetch::{FetchTask, Request, Response};
+use yew::format::Json;
+use yew::services::fetch::FetchTask;
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
-use eingang::config::backend::{HOST as BACKEND_HOST, PORT as BACKEND_PORT};
 use eingang::config::frontend::KEY;
-
-type FetchResponse<T> = Response<Json<Result<T, Error>>>;
+use crate::api::{FetchJsonResponse, FetchStringResponse};
 
 struct State {
     notes: Vec<Note>,
@@ -22,7 +20,7 @@ pub struct Home {
     state: State,
     link: ComponentLink<Self>,
     storage: StorageService,
-    ft: Option<FetchTask>,  // currently active FetchTask is saved here
+    ft: Option<FetchTask>,
 }
 
 pub enum Msg {
@@ -80,7 +78,7 @@ impl Component for Home {
                     ConsoleService::info(message.as_str());
                     return false
                 }
-                let  callback = self.link.callback(move | response: Response<Result<String, Error>>|{
+                let callback = self.link.callback(move | response: FetchStringResponse |{
                     let (meta, _) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::DeleteNoteSuccessful(id)
@@ -88,17 +86,15 @@ impl Component for Home {
                         Msg::DeleteNoteFailed(id)
                     }
                 });
-                let uri = format!("http://{}:{}/notes/{}/delete", BACKEND_HOST, BACKEND_PORT, note_id);
-                let request = Request::delete(uri).body(Nothing).unwrap();
-                let task = yew::services::FetchService::fetch(request, callback).unwrap();
+                let task = crate::api::delete_single_note(callback, note_id);
                 self.ft = Some(task)
             }
             Msg::DeleteNoteSuccessful(id) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
                 let message = format!("Note {} deleted", note_id);
-                self.ft = None;
                 ConsoleService::info(message.as_str());
-                // TODO Since Calls operate on IO level, the self object needs to be updated from disk
+
+                self.ft = None;
                 self.link.send_message(Msg::GetNotes);
             }
             Msg::DeleteNoteFailed(id) => {
@@ -122,8 +118,7 @@ impl Component for Home {
                 ConsoleService::info(message.as_str())
             }
             Msg::GetNotes => {
-                // set up what to do if the FetchResponse finishes
-                let callback = self.link.callback(move |response: FetchResponse<Vec<Note>>| {
+                let callback = self.link.callback(move |response: FetchJsonResponse<Vec<Note>>| {
                     let (meta, Json(result)) = response.into_parts();
                     if meta.status.is_success() {
                         Msg::GetNotesSuccessful(result.ok().unwrap())
@@ -131,17 +126,7 @@ impl Component for Home {
                         Msg::GetNotesFailed
                     }
                 });
-
-                // actual request body
-                let uri = format!("http://{}:{}/notes", BACKEND_HOST, BACKEND_PORT);
-                let request = Request::get(uri)
-                    .body(Nothing)
-                    .unwrap();
-
-                // Setting out the request
-                let task = yew::services::FetchService::fetch(request, callback).unwrap();
-
-                // Saving the request on the model
+                let task = crate::api::get_all_notes(callback);
                 self.ft = Some(task)
             }
             Msg::GetNotesSuccessful(data) => {
