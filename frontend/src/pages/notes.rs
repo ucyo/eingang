@@ -12,26 +12,32 @@ use eingang::config::frontend::KEY;
 
 type FetchResponse<T> = Response<Json<Result<T, Error>>>;
 
-pub struct Notes {
+struct State {
+    notes: Vec<Note>,
+    get_notes_loaded: bool,
+    get_notes_error: Option<Error>
+}
+
+pub struct Home {
+    state: State,
     link: ComponentLink<Self>,
     storage: StorageService,
-    value: Vec<Note>,
-    ft: Option<FetchTask>, // currently active FetchTask is saved here
+    ft: Option<FetchTask>,  // currently active FetchTask is saved here
 }
 
 pub enum Msg {
-    FetchNotes,
-    FetchNotesSuccessful(Vec<Note>),
-    FetchNotesFailed,
+    GetNotes,
+    GetNotesSuccessful(Vec<Note>),
+    GetNotesFailed,
     DeleteNote(u128),
     DeleteNoteSuccessful(u128),
     DeleteNoteFailed(u128),
-    EditNote(u128),
-    ViewNote(u128),
     CreateNote,
+    ViewNote(u128),
+    EditNote(u128),
 }
 
-impl Component for Notes {
+impl Component for Home {
     type Message = Msg;
     type Properties = ();
 
@@ -40,7 +46,7 @@ impl Component for Notes {
         // Area::Session gets deleted after the tab or window is closed
         // details: https://stackoverflow.com/questions/19867599/what-is-the-difference-between-localstorage-sessionstorage-session-and-cookies
         let storage = StorageService::new(Area::Local).expect("Allocation error");
-        let value = {
+        let products = {
             if let Json(Ok(val)) = storage.restore(KEY) {
                 ConsoleService::log("Restored!");
                 val
@@ -49,11 +55,16 @@ impl Component for Notes {
                 Default::default()
             }
         };
-        link.send_message(Msg::FetchNotes);
+        let state = State {
+            notes: products,
+            get_notes_loaded: false,
+            get_notes_error: None,
+        };
+        link.send_message(Msg::GetNotes);
         Self {
+            state,
             link,
             storage,
-            value,
             ft: None,
         }
     }
@@ -88,7 +99,7 @@ impl Component for Notes {
                 self.ft = None;
                 ConsoleService::info(message.as_str());
                 // TODO Since Calls operate on IO level, the self object needs to be updated from disk
-                self.link.send_message(Msg::FetchNotes);
+                self.link.send_message(Msg::GetNotes);
             }
             Msg::DeleteNoteFailed(id) => {
                 let note_id = uuid::Uuid::from_u128_le(id);
@@ -110,14 +121,14 @@ impl Component for Notes {
                 let message = format!("Creating a new Note");
                 ConsoleService::info(message.as_str())
             }
-            Msg::FetchNotes => {
+            Msg::GetNotes => {
                 // set up what to do if the FetchResponse finishes
                 let callback = self.link.callback(move |response: FetchResponse<Vec<Note>>| {
                     let (meta, Json(result)) = response.into_parts();
                     if meta.status.is_success() {
-                        Msg::FetchNotesSuccessful(result.ok().unwrap())
+                        Msg::GetNotesSuccessful(result.ok().unwrap())
                     } else {
-                        Msg::FetchNotesFailed
+                        Msg::GetNotesFailed
                     }
                 });
 
@@ -133,17 +144,17 @@ impl Component for Notes {
                 // Saving the request on the model
                 self.ft = Some(task)
             }
-            Msg::FetchNotesSuccessful(data) => {
+            Msg::GetNotesSuccessful(data) => {
                 ConsoleService::log("Fetching of data successful!!!");
-                self.value = data;
+                self.state.notes = data;
                 self.ft = None
             }
-            Msg::FetchNotesFailed => {
+            Msg::GetNotesFailed => {
                 ConsoleService::log("Fetching of data failed!!!");
                 self.ft = None
             }
         }
-        self.storage.store(KEY, Json(&self.value));
+        self.storage.store(KEY, Json(&self.state.notes));
         true
     }
 
@@ -155,22 +166,22 @@ impl Component for Notes {
     }
 
     fn view(&self) -> Html {
-            let notes: Vec<Html> = self.value.iter().map(|note: &Note| {
-            let id = note.get_uuid().to_u128_le();
-                 html! {
-                  <div>
-                    <p>{&note.get_uuid()}{":"}</p>
-                    <p>{&note}</p>
-                    <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
-                    <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
-                    <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
-                </div>
-                }
-            })
-            .collect();
+        let notes: Vec<Html> = self.state.notes.iter().map(|note: &Note| {
+        let id = note.get_uuid().to_u128_le();
+                html! {
+                <div>
+                <p>{&note.get_uuid()}{":"}</p>
+                <p>{&note}</p>
+                <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
+                <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
+                <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
+            </div>
+            }
+        })
+        .collect();
         html! {
             <div>
-                <button onclick=self.link.callback(|_| Msg::FetchNotes) type="submit">{ "Load Notes" }</button>
+                <button onclick=self.link.callback(|_| Msg::GetNotes) type="submit">{ "Load Notes" }</button>
                 <button onclick=self.link.callback(|_| Msg::CreateNote) type="submit">{ "Create Note" }</button>
                 <span>{notes}</span>
             </div>
