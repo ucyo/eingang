@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::*;
 mod components;
+mod api;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
