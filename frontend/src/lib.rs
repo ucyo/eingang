@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
-mod components;
+mod pages;
 mod api;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-    yew::start_app::<components::notes::Home>();
+    yew::start_app::<pages::notes::Home>();
 }
