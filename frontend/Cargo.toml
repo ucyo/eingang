@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 yew = "0.17.*"
+yew-router = "0.14.*"
 wasm-bindgen = "0.2.*"
 eingang = { path = "../base/" }
 anyhow = "1.0.*"

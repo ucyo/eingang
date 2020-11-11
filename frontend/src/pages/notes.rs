@@ -16,7 +16,7 @@ struct State {
     get_notes_error: Option<Error>,
 }
 
-pub struct Home {
+pub struct NotesPage {
     state: State,
     link: ComponentLink<Self>,
     storage: StorageService,
@@ -35,7 +35,7 @@ pub enum Msg {
     EditNote(u128),
 }
 
-impl Component for Home {
+impl Component for NotesPage {
     type Message = Msg;
     type Properties = ();
 
