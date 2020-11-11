@@ -18,6 +18,15 @@ pub fn get_all_notes(callback: FetchJsonCallback<Vec<Note>>) -> FetchTask {
     yew::services::FetchService::fetch(request, callback).unwrap()
 }
 
+pub fn get_single_note(callback: FetchJsonCallback<Note>,  note_id: uuid::Uuid) -> FetchTask {
+    let uri = format!(
+        "http://{}:{}/notes/{}",
+        BACKEND_HOST, BACKEND_PORT, note_id
+    );
+    let request = Request::get(uri).body(Nothing).unwrap();
+    yew::services::FetchService::fetch(request, callback).unwrap()
+}
+
 pub fn delete_single_note(callback: FetchStringCallback, note_id: uuid::Uuid) -> FetchTask {
     let uri = format!(
         "http://{}:{}/notes/{}/delete",

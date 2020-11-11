@@ -171,7 +171,7 @@ impl Component for NotesPage {
             let id = note.get_uuid().to_u128_le();
             html! {
                 <div>
-                    <p>{&note.get_uuid()}{":"}</p>
+                    <p>{id}{":"}</p>
                     <p>{&note}</p>
                     <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
                     <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
