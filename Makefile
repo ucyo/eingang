@@ -2,7 +2,7 @@ both: build
 	@echo "===================================================================="
 	@echo "Start backend and frontend"
 	@echo "===================================================================="
-	@cargo run -p eingang-backend & miniserve ./static --index index.html
+	@cargo run -p eingang-backend & simple-http-server --index --nocache --try-file "static/index.html" -p 8080 ./static
 
 build:
 	@echo "===================================================================="
@@ -12,9 +12,9 @@ build:
 
 frontend: build
 	@echo "===================================================================="
-	@echo "Serve files via miniserve"
+	@echo "Serve files via simple-http-server"
 	@echo "===================================================================="
-	@miniserve ./static --index index.html
+	@simple-http-server --index --nocache --try-file "static/index.html" -p 8080 ./static
 
 backend:
 	@echo "===================================================================="
