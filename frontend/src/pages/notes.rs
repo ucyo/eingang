@@ -6,6 +6,8 @@ use yew::services::fetch::FetchTask;
 use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew_router::components::RouterAnchor;
+use crate::route::Route;
 
 use crate::api::{FetchJsonResponse, FetchStringResponse};
 use eingang::config::frontend::KEY;
@@ -158,6 +160,7 @@ impl Component for NotesPage {
     }
 
     fn view(&self) -> Html {
+        type Anchor = RouterAnchor<Route>;
         if let Some(err) = &self.state.get_notes_error {
             return html! {
                 <div> {format!("Error: {}", err)} </div>
@@ -171,9 +174,11 @@ impl Component for NotesPage {
             let id = note.get_uuid().to_u128_le();
             html! {
                 <div>
-                    <p>{id}{":"}</p>
+                    <p>{format!("ID {} ({})", note.get_uuid(), id)}</p>
                     <p>{&note}</p>
-                    <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
+                    <Anchor route=Route::Note(id)>
+                        <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
+                    </Anchor>
                     <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
                     <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
                 </div>
