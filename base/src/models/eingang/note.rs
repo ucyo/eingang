@@ -1,6 +1,8 @@
-use super::{meta::Meta, Idable};
+use crate::config::get_markdown_options;
+use super::{meta::Meta, Idable, Marker};
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use pulldown_cmark::{Parser, html};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct NoteQuery {

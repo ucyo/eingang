@@ -95,16 +95,30 @@ impl Component for SingleNotePage {
                 </div>
             }
         } else if let Some(ref note) = self.state.note {
-            html! {
-                <div>
-                    <p> {&note.get_uuid()} </p>
-                    <p> {&note} </p>
-                </div>
-            }
+            html_string_to_render(note.to_markdown().as_str())
         } else {
             html!{
                 <div><p>{"Unknown Error"}</p></div>
             }
         }
     }
+}
+
+use yew::web_sys;
+use yew::virtual_dom::VNode;
+use web_sys::Node;
+
+
+fn html_string_to_render(content: &str) -> Html {
+    let div = web_sys::window()
+                .unwrap()
+                .document()
+                .unwrap()
+                .create_element("div")
+                .unwrap();
+    div.set_inner_html(content);
+
+    let node = Node::from(div);
+    let vnode = VNode::VRef(node);
+    vnode
 }
