@@ -49,6 +49,18 @@ impl Idable for Note {
     }
 }
 
+impl Marker for Note {
+    fn to_markdown(&self) -> String {
+        let options = get_markdown_options();
+        let parser = Parser::new_ext(self.content.as_str(), options);
+
+        // Write to String buffer.
+        let mut html_output = String::new();
+        html::push_html(&mut html_output, parser);
+        html_output
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{Idable, Note};

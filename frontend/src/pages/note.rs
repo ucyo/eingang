@@ -2,7 +2,7 @@ use yew::{ComponentLink, Properties, Component, ShouldRender};
 use yew::{html, Html};
 use yew::services::fetch::FetchTask;
 use yew::format::Json;
-use eingang::models::{Note, Idable};
+use eingang::models::{Note, Idable, Marker};
 use anyhow::Error;
 use crate::api::FetchJsonResponse;
 

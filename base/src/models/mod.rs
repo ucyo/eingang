@@ -6,4 +6,4 @@ pub use self::eingang::task::{Task, TaskQuery, TaskStatus};
 pub use self::eingang::thread::{
     NoteUuid, TaskUuid, Thread, ThreadFilter, ThreadQuery, ThreadResponse,
 };
-pub use self::eingang::Idable;
+pub use self::eingang::{Idable, Marker};
