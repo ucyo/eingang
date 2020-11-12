@@ -95,7 +95,9 @@ impl Component for SingleNotePage {
                 </div>
             }
         } else if let Some(ref note) = self.state.note {
-            html_string_to_render(note.to_markdown().as_str())
+            html! {
+                html_string_to_render(note.to_markdown().as_str())
+            }
         } else {
             html!{
                 <div><p>{"Unknown Error"}</p></div>
