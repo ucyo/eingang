@@ -1,4 +1,4 @@
-use crate::pages::{NotesPage, SingleNotePage};
+use crate::pages::{NotesPage, SingleNotePage, SingleNoteEditPage};
 use crate::route::Route;
 use yew::{Component, ComponentLink, ShouldRender, Html, html};
 use yew_router::router::Router;
@@ -26,6 +26,7 @@ impl Component for App {
             match switch {
                 Route::Note(uuid) => html!{<SingleNotePage uuid=uuid/>},
                 Route::NotesPage => html!{<NotesPage/>},
+                Route::NoteEditPage(uuid) => html!{<SingleNoteEditPage uuid=uuid/>}
             }
         );
 
