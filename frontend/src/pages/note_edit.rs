@@ -27,7 +27,8 @@ pub enum Msg {
     GetNote,
     GetNoteSuccessful(Note),
     GetProductFailed(Error),
-    ContentChanged(yew::KeyboardEvent),
+    ContentChanged(String),
+    Save,
     SaveSuccessful,
     SaveFailed(Error),
 }
@@ -80,13 +81,21 @@ impl Component for SingleNoteEditPage {
                 true
             }
             Msg::ContentChanged(content) => {
-                let key = content.key();
-                let msg = format!("Registered Keypress: {}", key);
+                let msg = format!("Registered Keypress: {:?}", content);
                 yew::services::ConsoleService::warn(msg.as_str());
+                if let Some(ref mut note) = self.state.note {
+                    note.content = content;
+                }
+                // TODO Additionally safe in Session Storage in case the browser window is closed
+                // TODO Try loading from session storage first
                 true
             }
             Msg::SaveSuccessful => {
                 yew::services::ConsoleService::warn("Successful save needs to be implemented.");
+                true
+            }
+            Msg::Save => {
+                yew::services::ConsoleService::warn("Save needs to be implemented.");
                 true
             }
             Msg::SaveFailed(_err) => {
@@ -115,9 +124,9 @@ impl Component for SingleNoteEditPage {
             html! {
                 <div>
                     <p> {&note.get_uuid()} </p>
-                    <textarea onkeypress=self.link.callback(move |key| Msg::ContentChanged(key))
-                     rows=10 cols=50> {&note.content} </textarea>
-                </div>
+                    <textarea oninput=self.link.callback(move |v: yew::InputData| Msg::ContentChanged(v.value)) value=note.content/>
+                    <button onclick=self.link.callback(move |_| Msg::Save) type="submit">{ "Save" }</button>
+                    </div>
             }
         } else {
             html!{
