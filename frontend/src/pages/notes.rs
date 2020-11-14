@@ -179,7 +179,9 @@ impl Component for NotesPage {
                     <Anchor route=Route::Note(id)>
                         <button onclick=self.link.callback(move |_| Msg::ViewNote(id)) type="submit">{ "View" }</button>
                     </Anchor>
-                    <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
+                    <Anchor route=Route::NoteEditPage(id)>
+                        <button onclick=self.link.callback(move |_| Msg::EditNote(id)) type="submit">{ "Edit" }</button>
+                    </Anchor>
                     <button onclick=self.link.callback(move |_| Msg::DeleteNote(id)) type="submit">{ "Delete" }</button>
                 </div>
             }
