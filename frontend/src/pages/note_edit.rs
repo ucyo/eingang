@@ -6,7 +6,7 @@ use yew::services::ConsoleService;
 use yew::format::Json;
 use eingang::models::{Note, Idable};
 use anyhow::Error;
-use crate::api::FetchJsonResponse;
+use crate::api::{FetchJsonResponse, FetchStringResponse};
 use eingang::config::frontend::KEY;
 
 pub struct SingleNoteEditPage {
@@ -84,6 +84,26 @@ impl Component for SingleNoteEditPage {
                 self.link.send_message(Msg::GetNote);
                 true
             }
+            Msg::Save => {
+                let callback = self.link
+                    .callback(|response: FetchStringResponse|{
+                        let (meta, result) = response.into_parts();
+                        if meta.status.is_success() {
+                            Msg::SaveSuccessful
+                        } else {
+                            Msg::SaveFailed(result.err().unwrap())
+                        }
+                });
+                if let Some(ref note) = self.state.note {
+                    let uuid = note.get_uuid();
+                    let changes = serde_json::json!({
+                        "content": note.content,
+                    });
+                    let task = crate::api::save_single_note(callback, uuid, Json(&changes));
+                    self.task = Some(task)
+                }
+                true
+            }
             Msg::GetNote => {
                 let callback = self
                     .link
@@ -123,15 +143,12 @@ impl Component for SingleNoteEditPage {
                 true
             }
             Msg::SaveSuccessful => {
-                yew::services::ConsoleService::warn("Successful save needs to be implemented.");
+                yew::services::DialogService::alert("Saving was successful.");
                 true
             }
-            Msg::Save => {
-                yew::services::ConsoleService::warn("Save needs to be implemented.");
-                true
-            }
-            Msg::SaveFailed(_err) => {
-                yew::services::ConsoleService::warn("Error Note save needs to be implemented.");
+            Msg::SaveFailed(err) => {
+                let message = format!("Deleting Note failed, because {}", err);
+                yew::services::ConsoleService::warn(&message.as_str());
                 true
             }
         }
