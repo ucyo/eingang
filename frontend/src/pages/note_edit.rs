@@ -26,6 +26,7 @@ struct State {
     note: Option<Note>,
     note_loaded: bool,
     note_loading_error: Option<Error>,
+    preview_mode: bool,
 }
 
 pub enum Msg {
@@ -33,6 +34,7 @@ pub enum Msg {
     GetNoteSuccessful(Note),
     GetProductFailed(Error),
     ContentChanged(String),
+    PreviewMode,
     Save,
     SaveSuccessful,
     SaveFailed(Error),
@@ -62,7 +64,8 @@ impl Component for SingleNoteEditPage {
             state: State {
                 note,
                 note_loaded,
-                note_loading_error: None
+                note_loading_error: None,
+                preview_mode: false,
             },
             storage,
             link,
@@ -72,6 +75,10 @@ impl Component for SingleNoteEditPage {
     }
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::PreviewMode => {
+                yew::services::ConsoleService::warn("Preview mode needs to be implemented.");
+                true
+            }
             Msg::Cancel => {
                 self.storage.remove(self.storage_key.as_str());
                 self.link.send_message(Msg::GetNote);
@@ -149,6 +156,7 @@ impl Component for SingleNoteEditPage {
             html! {
                 <div>
                     <p> {&note.get_uuid()} </p>
+                    <button onclick=self.link.callback(move |_| Msg::PreviewMode) type="submit">{ "Preview" }</button>
                     <textarea oninput=self.link.callback(move |v: yew::InputData| Msg::ContentChanged(v.value)) value=note.content/>
                     <button onclick=self.link.callback(move |_| Msg::Save) type="submit">{ "Save" }</button>
                     <button onclick=self.link.callback(move |_| Msg::Cancel) type="submit">{ "Cancel" }</button>
