@@ -1,16 +1,21 @@
 use yew::{ComponentLink, Properties, Component, ShouldRender};
 use yew::{html, Html};
 use yew::services::fetch::FetchTask;
+use yew::services::storage::{Area, StorageService};
+use yew::services::ConsoleService;
 use yew::format::Json;
 use eingang::models::{Note, Idable};
 use anyhow::Error;
 use crate::api::FetchJsonResponse;
+use eingang::config::frontend::KEY;
 
 pub struct SingleNoteEditPage {
     props: Props,
     state: State,
     link: ComponentLink<Self>,
+    storage: StorageService,
     task: Option<FetchTask>,
+    storage_key: String,
 }
 #[derive(Properties, Clone)]
 pub struct Props {
@@ -20,7 +25,7 @@ pub struct Props {
 struct State {
     note: Option<Note>,
     note_loaded: bool,
-    note_loading_error: Option<Error>
+    note_loading_error: Option<Error>,
 }
 
 pub enum Msg {
@@ -31,6 +36,7 @@ pub enum Msg {
     Save,
     SaveSuccessful,
     SaveFailed(Error),
+    Cancel,
 }
 
 impl Component for SingleNoteEditPage {
@@ -38,21 +44,39 @@ impl Component for SingleNoteEditPage {
     type Properties = Props;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(Msg::GetNote);
+        let storage = StorageService::new(Area::Local).expect("Allocation not possible");
+        let key = format!("{}.{}", KEY, props.uuid);
+        let (note, note_loaded): (Option<Note>, bool) = {
+            if let Json(Ok(note)) = storage.restore(key.as_str()) {
+                ConsoleService::info("Restored from session");
+                (Some(note), true)
+            } else {
+                ConsoleService::warn("Restoring did not work");
+                link.send_message(Msg::GetNote);
+                (None, false)
+            }
+        };
 
         Self {
             props,
             state: State {
-                note: None,
-                note_loaded: false,
+                note,
+                note_loaded,
                 note_loading_error: None
             },
+            storage,
             link,
             task: None,
+            storage_key: key,
         }
     }
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
+            Msg::Cancel => {
+                self.storage.remove(self.storage_key.as_str());
+                self.link.send_message(Msg::GetNote);
+                true
+            }
             Msg::GetNote => {
                 let callback = self
                     .link
@@ -82,10 +106,11 @@ impl Component for SingleNoteEditPage {
             }
             Msg::ContentChanged(content) => {
                 let msg = format!("Registered Keypress: {:?}", content);
-                yew::services::ConsoleService::warn(msg.as_str());
+                ConsoleService::warn(msg.as_str());
                 if let Some(ref mut note) = self.state.note {
                     note.content = content;
                 }
+                self.storage.store(self.storage_key.as_str(), Json(&self.state.note));
                 // TODO Additionally safe in Session Storage in case the browser window is closed
                 // TODO Try loading from session storage first
                 true
@@ -126,6 +151,7 @@ impl Component for SingleNoteEditPage {
                     <p> {&note.get_uuid()} </p>
                     <textarea oninput=self.link.callback(move |v: yew::InputData| Msg::ContentChanged(v.value)) value=note.content/>
                     <button onclick=self.link.callback(move |_| Msg::Save) type="submit">{ "Save" }</button>
+                    <button onclick=self.link.callback(move |_| Msg::Cancel) type="submit">{ "Cancel" }</button>
                     </div>
             }
         } else {
