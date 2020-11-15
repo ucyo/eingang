@@ -120,6 +120,8 @@ impl Component for NotesPage {
                 ConsoleService::info(message.as_str())
             }
             Msg::GetNotes => {
+                // TODO Using macros to generate callback:
+                // https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=5aff7f6358ae521cd4ff8aa6921b0102
                 let callback = self
                     .link
                     .callback(move |response: FetchJsonResponse<Vec<Note>>| {

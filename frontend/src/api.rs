@@ -12,6 +12,8 @@ type FetchJsonCallback<T> = Callback<FetchJsonResponse<T>>;
 pub type FetchStringResponse = Response<Result<String, Error>>;
 type FetchStringCallback = Callback<FetchStringResponse>;
 
+// TODO Using macros to generate api:
+// https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=5aff7f6358ae521cd4ff8aa6921b0102
 
 pub fn get_all_notes(callback: FetchJsonCallback<Vec<Note>>) -> FetchTask {
     let uri = format!("http://{}:{}/notes", BACKEND_HOST, BACKEND_PORT);
