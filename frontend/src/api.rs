@@ -23,16 +23,16 @@ macro_rules! create_api {
         $uri:expr,
         $method:ident
        ) => {
-           pub fn $func_name(callback: $callback_type) -> FetchTask {
-               let uri = format!($uri, BACKEND_HOST, BACKEND_PORT);
-               let request = Request::builder()
-                    .method(stringify!($method))
-                    .uri(uri)
-                    .body(Nothing)
-                    .unwrap();
-               yew::services::FetchService::fetch(request, callback).unwrap()
-           }
-       };
+        pub fn $func_name(callback: $callback_type) -> FetchTask {
+            let uri = format!($uri, BACKEND_HOST, BACKEND_PORT);
+            let request = Request::builder()
+                .method(stringify!($method))
+                .uri(uri)
+                .body(Nothing)
+                .unwrap();
+            yew::services::FetchService::fetch(request, callback).unwrap()
+        }
+    };
 }
 
 macro_rules! create_single_api_json {
@@ -41,17 +41,21 @@ macro_rules! create_single_api_json {
         $uri:expr,
         $method:ident
        ) => {
-           pub fn $func_name(callback: $callback_type, id: uuid::Uuid, obj: Json<&serde_json::Value>) -> FetchTask {
-               let uri = format!($uri, BACKEND_HOST, BACKEND_PORT, id);
-               let request = Request::builder()
-                    .method(stringify!($method))
-                    .uri(uri)
-                    .header("Content-Type", "application/json")
-                    .body(obj)
-                    .unwrap();
-               yew::services::FetchService::fetch(request, callback).unwrap()
-           }
-       };
+        pub fn $func_name(
+            callback: $callback_type,
+            id: uuid::Uuid,
+            obj: Json<&serde_json::Value>,
+        ) -> FetchTask {
+            let uri = format!($uri, BACKEND_HOST, BACKEND_PORT, id);
+            let request = Request::builder()
+                .method(stringify!($method))
+                .uri(uri)
+                .header("Content-Type", "application/json")
+                .body(obj)
+                .unwrap();
+            yew::services::FetchService::fetch(request, callback).unwrap()
+        }
+    };
 }
 
 macro_rules! create_api_uuid {
@@ -60,36 +64,36 @@ macro_rules! create_api_uuid {
         $uri:expr,
         $method:ident
        ) => {
-           pub fn $func_name(callback: $callback_type, id: uuid::Uuid) -> FetchTask {
-               let uri = format!($uri, BACKEND_HOST, BACKEND_PORT, id);
-               let request = Request::builder()
-                    .method(stringify!($method))
-                    .uri(uri)
-                    .body(Nothing)
-                    .unwrap();
-               yew::services::FetchService::fetch(request, callback).unwrap()
-           }
-       };
+        pub fn $func_name(callback: $callback_type, id: uuid::Uuid) -> FetchTask {
+            let uri = format!($uri, BACKEND_HOST, BACKEND_PORT, id);
+            let request = Request::builder()
+                .method(stringify!($method))
+                .uri(uri)
+                .body(Nothing)
+                .unwrap();
+            yew::services::FetchService::fetch(request, callback).unwrap()
+        }
+    };
 }
 
-create_single_api_json!{
+create_single_api_json! {
     save_single_note, FetchStringCallback, "http://{}:{}/notes/{}/update",
     PATCH
 }
 
-create_api!{
+create_api! {
     get_all_notes, FetchJsonCallback<Vec<Note>>, "http://{}:{}/notes",
     GET
 }
 
-create_api_uuid!{
+create_api_uuid! {
     get_single_note,
     FetchJsonCallback<Note>,
     "http://{}:{}/notes/{}",
     GET
 }
 
-create_api_uuid!{
+create_api_uuid! {
     delete_single_note,
     FetchStringCallback,
     "http://{}:{}/notes/{}/delete",

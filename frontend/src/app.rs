@@ -1,6 +1,6 @@
-use crate::pages::{NotesPage, SingleNotePage, SingleNoteEditPage};
+use crate::pages::{NotesPage, SingleNoteEditPage, SingleNotePage};
 use crate::route::Route;
-use yew::{Component, ComponentLink, ShouldRender, Html, html};
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::router::Router;
 
 pub struct App {}
@@ -22,13 +22,11 @@ impl Component for App {
     }
 
     fn view(&self) -> Html {
-        let render = Router::render(|switch|
-            match switch {
-                Route::Note(uuid) => html!{<SingleNotePage uuid=uuid/>},
-                Route::NotesPage => html!{<NotesPage/>},
-                Route::NoteEditPage(uuid) => html!{<SingleNoteEditPage uuid=uuid/>}
-            }
-        );
+        let render = Router::render(|switch| match switch {
+            Route::Note(uuid) => html! {<SingleNotePage uuid=uuid/>},
+            Route::NotesPage => html! {<NotesPage/>},
+            Route::NoteEditPage(uuid) => html! {<SingleNoteEditPage uuid=uuid/>},
+        });
 
         html! {
             <Router<Route, ()> render=render/>

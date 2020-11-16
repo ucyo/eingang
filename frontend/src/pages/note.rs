@@ -1,10 +1,10 @@
-use yew::{ComponentLink, Properties, Component, ShouldRender};
-use yew::{html, Html};
-use yew::services::fetch::FetchTask;
-use yew::format::Json;
-use eingang::models::{Note, Idable};
-use anyhow::Error;
 use crate::api::FetchJsonResponse;
+use anyhow::Error;
+use eingang::models::{Idable, Note};
+use yew::format::Json;
+use yew::services::fetch::FetchTask;
+use yew::{html, Html};
+use yew::{Component, ComponentLink, Properties, ShouldRender};
 
 pub struct SingleNotePage {
     props: Props,
@@ -20,7 +20,7 @@ pub struct Props {
 struct State {
     note: Option<Note>,
     note_loaded: bool,
-    note_loading_error: Option<Error>
+    note_loading_error: Option<Error>,
 }
 
 pub enum Msg {
@@ -41,7 +41,7 @@ impl Component for SingleNotePage {
             state: State {
                 note: None,
                 note_loaded: false,
-                note_loading_error: None
+                note_loading_error: None,
             },
             link,
             task: None,
@@ -50,17 +50,18 @@ impl Component for SingleNotePage {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::GetNote => {
-                let callback = self
-                    .link
-                    .callback(|response: FetchJsonResponse<Note>| {
-                        let (meta, Json(result)) = response.into_parts();
-                        if meta.status.is_success() {
-                            Msg::GetNoteSuccessful(result.ok().unwrap())
-                        } else {
-                            Msg::GetProductFailed(result.err().unwrap())
-                        }
+                let callback = self.link.callback(|response: FetchJsonResponse<Note>| {
+                    let (meta, Json(result)) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::GetNoteSuccessful(result.ok().unwrap())
+                    } else {
+                        Msg::GetProductFailed(result.err().unwrap())
+                    }
                 });
-                let task = crate::api::get_single_note(callback, uuid::Uuid::from_u128_le(self.props.uuid));
+                let task = crate::api::get_single_note(
+                    callback,
+                    uuid::Uuid::from_u128_le(self.props.uuid),
+                );
                 self.task = Some(task);
                 self.state.note = None;
                 self.state.note_loaded = false;
@@ -102,7 +103,7 @@ impl Component for SingleNotePage {
                 </div>
             }
         } else {
-            html!{
+            html! {
                 <div><p>{"Unknown Error"}</p></div>
             }
         }

@@ -1,13 +1,13 @@
-use yew::{ComponentLink, Properties, Component, ShouldRender};
-use yew::{html, Html};
+use crate::api::{FetchJsonResponse, FetchStringResponse};
+use anyhow::Error;
+use eingang::config::frontend::KEY;
+use eingang::models::{Idable, Note};
+use yew::format::Json;
 use yew::services::fetch::FetchTask;
 use yew::services::storage::{Area, StorageService};
 use yew::services::ConsoleService;
-use yew::format::Json;
-use eingang::models::{Note, Idable};
-use anyhow::Error;
-use crate::api::{FetchJsonResponse, FetchStringResponse};
-use eingang::config::frontend::KEY;
+use yew::{html, Html};
+use yew::{Component, ComponentLink, Properties, ShouldRender};
 
 pub struct SingleNoteEditPage {
     props: Props,
@@ -85,14 +85,13 @@ impl Component for SingleNoteEditPage {
                 true
             }
             Msg::Save => {
-                let callback = self.link
-                    .callback(|response: FetchStringResponse|{
-                        let (meta, result) = response.into_parts();
-                        if meta.status.is_success() {
-                            Msg::SaveSuccessful
-                        } else {
-                            Msg::SaveFailed(result.err().unwrap())
-                        }
+                let callback = self.link.callback(|response: FetchStringResponse| {
+                    let (meta, result) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::SaveSuccessful
+                    } else {
+                        Msg::SaveFailed(result.err().unwrap())
+                    }
                 });
                 if let Some(ref note) = self.state.note {
                     let uuid = note.get_uuid();
@@ -105,17 +104,18 @@ impl Component for SingleNoteEditPage {
                 true
             }
             Msg::GetNote => {
-                let callback = self
-                    .link
-                    .callback(|response: FetchJsonResponse<Note>| {
-                        let (meta, Json(result)) = response.into_parts();
-                        if meta.status.is_success() {
-                            Msg::GetNoteSuccessful(result.ok().unwrap())
-                        } else {
-                            Msg::GetProductFailed(result.err().unwrap())
-                        }
+                let callback = self.link.callback(|response: FetchJsonResponse<Note>| {
+                    let (meta, Json(result)) = response.into_parts();
+                    if meta.status.is_success() {
+                        Msg::GetNoteSuccessful(result.ok().unwrap())
+                    } else {
+                        Msg::GetProductFailed(result.err().unwrap())
+                    }
                 });
-                let task = crate::api::get_single_note(callback, uuid::Uuid::from_u128_le(self.props.uuid));
+                let task = crate::api::get_single_note(
+                    callback,
+                    uuid::Uuid::from_u128_le(self.props.uuid),
+                );
                 self.task = Some(task);
                 self.state.note = None;
                 self.state.note_loaded = false;
@@ -137,7 +137,8 @@ impl Component for SingleNoteEditPage {
                 if let Some(ref mut note) = self.state.note {
                     note.content = content;
                 }
-                self.storage.store(self.storage_key.as_str(), Json(&self.state.note));
+                self.storage
+                    .store(self.storage_key.as_str(), Json(&self.state.note));
                 // TODO Additionally safe in Session Storage in case the browser window is closed
                 // TODO Try loading from session storage first
                 true
@@ -180,7 +181,7 @@ impl Component for SingleNoteEditPage {
                     </div>
             }
         } else {
-            html!{
+            html! {
                 <div><p>{"Unknown Error"}</p></div>
             }
         }

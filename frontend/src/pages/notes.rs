@@ -1,3 +1,4 @@
+use crate::route::Route;
 use anyhow::Error;
 use eingang::models::Idable;
 use eingang::models::Note;
@@ -7,7 +8,6 @@ use yew::services::storage::{Area, StorageService};
 use yew::services::{ConsoleService, DialogService};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use yew_router::components::RouterAnchor;
-use crate::route::Route;
 
 use crate::api::{FetchJsonResponse, FetchStringResponse};
 use eingang::config::frontend::KEY;

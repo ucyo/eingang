@@ -1,9 +1,9 @@
 #![recursion_limit = "256"]
 use wasm_bindgen::prelude::*;
 mod api;
+mod app;
 mod pages;
 mod route;
-mod app;
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
