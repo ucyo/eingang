@@ -3,6 +3,11 @@ name = "eingang-frontend"
 version = "0.1.0"
 authors = ["ucyo <cayoglu@me.com>"]
 edition = "2018"
+license = "MIT"
+description = "Take notes using Zettelkasten method with Markdown files (frontend)."
+homepage = "https://github.com/ucyo/eingang/"
+documentation = "https://github.com/ucyo/eingang/"
+repository = "https://github.com/ucyo/eingang/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
