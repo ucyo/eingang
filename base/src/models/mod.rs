@@ -1,4 +1,3 @@
-mod data;
 pub mod eingang;
 
 pub use self::eingang::journal::{JournalFilter, JournalQuery, JournalResponse, Period};
@@ -8,4 +7,3 @@ pub use self::eingang::thread::{
     NoteUuid, TaskUuid, Thread, ThreadFilter, ThreadQuery, ThreadResponse,
 };
 pub use self::eingang::Idable;
-pub use data::Data;

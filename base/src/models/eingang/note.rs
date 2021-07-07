@@ -1,5 +1,6 @@
 use super::{meta::Meta, Idable};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct NoteQuery {
@@ -33,6 +34,12 @@ impl Note {
     }
     pub fn update_modified_date(&mut self) {
         self.meta.update_modified_date()
+    }
+}
+
+impl fmt::Display for Note {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.content)
     }
 }
 

@@ -12,12 +12,12 @@
 //! The actual request for a period can be translated to the same function.
 //! Therefore only the cases `after`, `before`, and `after` and `before` needs
 //! to be implemented.
+use super::EingangVecResponse;
+use crate::io::{filter_notes, get_all_notes};
+use crate::io::{filter_tasks, get_all_tasks};
+use crate::io::{filter_threads, get_all_threads};
 use actix_web::{web, HttpRequest, HttpResponse};
 use eingang::models::{JournalFilter, JournalQuery, JournalResponse};
-use crate::io::{get_all_notes, filter_notes};
-use crate::io::{get_all_tasks, filter_tasks};
-use crate::io::{get_all_threads, filter_threads};
-use super::EingangVecResponse;
 
 /// Configure routes for Journal view
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -41,9 +41,7 @@ async fn journal(
     let filter = data.filter.unwrap_or_default();
     let result = filtering(filter, &data);
     Ok(web::Json(result))
-
 }
-
 
 fn filtering(filter: JournalFilter, data: &JournalQuery) -> Vec<JournalResponse> {
     match filter {
@@ -60,15 +58,25 @@ fn filtering(filter: JournalFilter, data: &JournalQuery) -> Vec<JournalResponse>
             if data.during.is_some() {
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_notes(notes, None, Some(tstamp));
-                filtered.into_iter().map(|n| JournalResponse::Note(n)).collect()
-        } else if data.untouched.is_some() {
+                filtered
+                    .into_iter()
+                    .map(|n| JournalResponse::Note(n))
+                    .collect()
+            } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_notes(notes, Some(tstamp), None);
-                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+                let result = filtered
+                    .into_iter()
+                    .map(|n| JournalResponse::Note(n))
+                    .collect();
                 result
-        } else {
-                let filtered = filter_notes(notes, data.before_to_timestamp(), data.after_to_timestamp());
-                let result = filtered.into_iter().map(|n| JournalResponse::Note(n)).collect();
+            } else {
+                let filtered =
+                    filter_notes(notes, data.before_to_timestamp(), data.after_to_timestamp());
+                let result = filtered
+                    .into_iter()
+                    .map(|n| JournalResponse::Note(n))
+                    .collect();
                 result
             }
         }
@@ -77,16 +85,26 @@ fn filtering(filter: JournalFilter, data: &JournalQuery) -> Vec<JournalResponse>
             if data.during.is_some() {
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_tasks(tasks, None, Some(tstamp));
-                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Task(t))
+                    .collect();
                 result
-        } else if data.untouched.is_some() {
+            } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_tasks(tasks, Some(tstamp), None);
-                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Task(t))
+                    .collect();
                 result
-        } else {
-                let filtered = filter_tasks(tasks, data.before_to_timestamp(), data.after_to_timestamp());
-                let result = filtered.into_iter().map(|t| JournalResponse::Task(t)).collect();
+            } else {
+                let filtered =
+                    filter_tasks(tasks, data.before_to_timestamp(), data.after_to_timestamp());
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Task(t))
+                    .collect();
                 result
             }
         }
@@ -95,16 +113,29 @@ fn filtering(filter: JournalFilter, data: &JournalQuery) -> Vec<JournalResponse>
             if data.during.is_some() {
                 let tstamp = data.during.unwrap().to_timestamp();
                 let filtered = filter_threads(threads, None, Some(tstamp));
-                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Thread(t))
+                    .collect();
                 result
-        } else if data.untouched.is_some() {
+            } else if data.untouched.is_some() {
                 let tstamp = data.untouched.unwrap().to_timestamp();
                 let filtered = filter_threads(threads, Some(tstamp), None);
-                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Thread(t))
+                    .collect();
                 result
-        } else {
-                let filtered = filter_threads(threads, data.before_to_timestamp(), data.after_to_timestamp());
-                let result = filtered.into_iter().map(|t| JournalResponse::Thread(t)).collect();
+            } else {
+                let filtered = filter_threads(
+                    threads,
+                    data.before_to_timestamp(),
+                    data.after_to_timestamp(),
+                );
+                let result = filtered
+                    .into_iter()
+                    .map(|t| JournalResponse::Thread(t))
+                    .collect();
                 result
             }
         }
